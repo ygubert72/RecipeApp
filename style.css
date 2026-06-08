@@ -1,1 +1,295 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
+body {
+    font-family: 'Inter', sans-serif;
+    transition: background 0.3s, color 0.2s;
+    padding: 0 16px 32px;
+}
+
+/* ТЕМА ЗЕЛЕНАЯ */
+body.theme-green {
+    --primary: #2b7a3e;
+    --primary-light: #e8f3e9;
+    --bg-card: #ffffff;
+    --text: #1f2e1c;
+    --accent-bg: #d9f0da;
+    --border: #c0dfc1;
+}
+
+/* ТЕМА ОРАНЖЕВАЯ */
+body.theme-orange {
+    --primary: #d97a2b;
+    --primary-light: #fff0e6;
+    --bg-card: #ffffff;
+    --text: #3e2a1f;
+    --accent-bg: #ffe1cc;
+    --border: #ffccaa;
+}
+
+body {
+    background: var(--primary-light);
+    color: var(--text);
+}
+
+.app-container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    background: var(--bg-card);
+    padding: 16px 24px;
+    border-radius: 32px;
+    margin: 20px 0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border: 1px solid var(--border);
+}
+
+h1 {
+    font-size: 1.4rem;
+}
+
+.menu-toggle {
+    display: none;
+    font-size: 28px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--primary);
+}
+
+.theme-switch button {
+    background: none;
+    border: 1px solid var(--border);
+    padding: 6px 14px;
+    border-radius: 40px;
+    margin-left: 8px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.theme-switch .active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+/* Мобильное меню */
+.mobile-nav {
+    display: none;
+    background: var(--bg-card);
+    border-radius: 28px;
+    margin-bottom: 20px;
+    padding: 16px;
+    border: 1px solid var(--border);
+}
+
+.mobile-nav.open {
+    display: block;
+}
+
+.mobile-nav ul {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.mobile-nav button {
+    background: var(--primary-light);
+    border: none;
+    padding: 8px 18px;
+    border-radius: 40px;
+    font-weight: 500;
+    cursor: pointer;
+    color: var(--text);
+}
+
+.filters-panel {
+    background: var(--bg-card);
+    border-radius: 32px;
+    padding: 24px;
+    margin-bottom: 32px;
+    border: 1px solid var(--border);
+}
+
+h3 {
+    margin-bottom: 12px;
+}
+
+.ingredients-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 16px 0 20px;
+}
+
+.ingredient-btn {
+    background: var(--primary-light);
+    border: 1px solid var(--border);
+    padding: 8px 16px;
+    border-radius: 40px;
+    cursor: pointer;
+    transition: 0.1s;
+    font-size: 14px;
+}
+
+.ingredient-btn.selected {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+.type-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 12px 0;
+}
+
+.type-buttons button {
+    background: var(--primary-light);
+    border: none;
+    padding: 8px 22px;
+    border-radius: 40px;
+    cursor: pointer;
+}
+
+.type-buttons button.active {
+    background: var(--primary);
+    color: white;
+}
+
+.find-btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 14px 28px;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 60px;
+    margin-top: 16px;
+    cursor: pointer;
+    width: 100%;
+}
+
+.results-area h2 {
+    margin-bottom: 16px;
+}
+
+.recipes-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    margin-top: 16px;
+}
+
+.recipe-card {
+    background: var(--bg-card);
+    border-radius: 28px;
+    padding: 20px;
+    cursor: pointer;
+    transition: transform 0.1s;
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.recipe-card:hover {
+    transform: scale(0.98);
+}
+
+.recipe-card h4 {
+    margin-bottom: 8px;
+    color: var(--primary);
+}
+
+.placeholder {
+    text-align: center;
+    padding: 40px;
+    opacity: 0.7;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: white;
+    max-width: 600px;
+    width: 90%;
+    border-radius: 40px;
+    padding: 24px;
+    max-height: 85vh;
+    overflow-y: auto;
+    position: relative;
+    color: #1e2a1a;
+}
+
+.close, .close-ai {
+    position: absolute;
+    right: 20px;
+    top: 16px;
+    font-size: 32px;
+    cursor: pointer;
+}
+
+.ai-modal textarea {
+    width: 100%;
+    padding: 12px;
+    border-radius: 24px;
+    border: 1px solid #ccc;
+    margin: 12px 0;
+    font-family: inherit;
+}
+
+.ai-answer {
+    background: #f0f0f0;
+    border-radius: 24px;
+    padding: 16px;
+    margin-top: 16px;
+    white-space: pre-wrap;
+}
+
+.ai-note {
+    font-size: 12px;
+    margin-top: 12px;
+    opacity: 0.7;
+}
+
+@media (max-width: 768px) {
+    .menu-toggle {
+        display: block;
+    }
+    
+    .theme-switch {
+        margin-top: 12px;
+        width: 100%;
+        text-align: center;
+    }
+    
+    header {
+        flex-wrap: wrap;
+    }
+    
+    .ingredients-grid {
+        max-height: 180px;
+        overflow-y: auto;
+    }
+}
