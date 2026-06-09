@@ -15,7 +15,7 @@
     <div class="app-container">
         <header>
             <button class="menu-toggle" id="menuToggle">☰</button>
-            <h1>Шеф-повар</h1>
+            <h1>👨‍🍳 Шеф-повар</h1>
             <div class="theme-switch">
                 <button data-theme="green" class="theme-btn active">🍃 Зеленый</button>
                 <button data-theme="orange" class="theme-btn">🍊 Оранжевый</button>
@@ -60,9 +60,9 @@
             </div>
 
             <div class="results-area">
-                <h2>🍲 Что можно приготовить</h2>
+                <h2>Рецепты</h2>
                 <div id="recipesList" class="recipes-list">
-                    <div class="placeholder">Выбери продукты и нажми "Найти"</div>
+                    <div class="placeholder">✅ Выбери продукты и нажми "Найти"</div>
                 </div>
             </div>
         </main>
@@ -137,7 +137,7 @@
                 items: ["Оливки", "Маслины", "Кукуруза консервированная", "Горошек консервированный", "Фасоль консервированная", "Томатная паста", "Огурцы маринованные", "Помидоры маринованные", "Лечо", "Аджика", "Варенье", "Мед"]
             },
             {
-                name: "🫒 Масла и соусы",
+                name: "🧴 Масла и соусы",
                 items: ["Масло подсолнечное", "Масло оливковое", "Масло кунжутное", "Соевый соус", "Томатный соус", "Майонез", "Кетчуп", "Горчица", "Хрен", "Уксус", "Бальзамический уксус"]
             },
             {
@@ -170,7 +170,7 @@
                 
                 const itemsDiv = document.createElement('div');
                 itemsDiv.className = 'group-items';
-                itemsDiv.style.display = 'none'; // ВСЕ ГРУППЫ СВЕРНУТЫ ПРИ ЗАГРУЗКЕ
+                itemsDiv.style.display = 'none'; // ВСЕ ГРУППЫ СВЕРНУТЫ
                 
                 group.items.forEach(item => {
                     const btn = document.createElement('button');
@@ -187,7 +187,7 @@
                     itemsDiv.appendChild(btn);
                 });
                 
-                let collapsed = true; // начинаем со свёрнутого состояния
+                let collapsed = true;
                 header.addEventListener('click', () => {
                     collapsed = !collapsed;
                     itemsDiv.style.display = collapsed ? 'none' : 'flex';
@@ -201,7 +201,7 @@
         }
 
         // ============================================
-        // ПОИСК РЕЦЕПТОВ (ВРЕМЕННО - ДЕМО)
+        // ПОИСК РЕЦЕПТОВ (ВРЕМЕННО)
         // ============================================
         
         function findRecipes() {
@@ -219,7 +219,7 @@
                     🎉 <strong>Выбрано продуктов: ${ingredientsList.length}</strong><br><br>
                     📋 Список: ${ingredientsList.slice(0, 10).join(', ')}${ingredientsList.length > 10 ? '...' : ''}<br><br>
                     ⏳ <strong>Рецепты появятся здесь!</strong><br>
-                    Сейчас я собираю для вас базу рецептов.
+                    Скоро добавлю полную базу рецептов.
                 </div>
             `;
         }
@@ -229,12 +229,10 @@
         // ============================================
         
         function setupEventListeners() {
-            // Гамбургер-меню
             document.getElementById('menuToggle')?.addEventListener('click', () => {
                 document.getElementById('mobileNav')?.classList.toggle('open');
             });
             
-            // Переключение темы
             document.querySelectorAll('.theme-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const theme = btn.getAttribute('data-theme');
@@ -245,7 +243,6 @@
                 });
             });
             
-            // Тип блюда
             document.querySelectorAll('.type-buttons button').forEach(btn => {
                 btn.addEventListener('click', () => {
                     document.querySelectorAll('.type-buttons button').forEach(b => b.classList.remove('active'));
@@ -254,10 +251,8 @@
                 });
             });
             
-            // Кнопка поиска
             document.getElementById('findRecipesBtn')?.addEventListener('click', findRecipes);
             
-            // Навигация по кухням
             document.querySelectorAll('.nav-category').forEach(btn => {
                 btn.addEventListener('click', () => {
                     currentCuisine = btn.getAttribute('data-category');
@@ -286,7 +281,6 @@
                 aiAnswer.innerHTML = '🧑‍🍳 ' + getAIAnswer(q);
             });
             
-            // Модалка рецепта
             const modal = document.getElementById('recipeModal');
             document.querySelector('.close')?.addEventListener('click', () => { if(modal) modal.style.display = 'none'; });
             window.onclick = (e) => { 
@@ -312,7 +306,7 @@
         setupEventListeners();
         document.body.classList.add('theme-green');
         
-        console.log("✅ Приложение загружено! Групп продуктов: " + ingredientsGroups.length + " (все свёрнуты)");
+        console.log("✅ Приложение загружено!");
     </script>
 </body>
 </html>
