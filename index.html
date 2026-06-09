@@ -5,9 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Шеф-повар — Рецепты из продуктов дома</title>
     
-    <!-- Фавикон (иконка на вкладке) -->
+    <!-- Фавикон -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%232ecc71' rx='20'/><text x='50%' y='50%' text-anchor='middle' dy='.35em' font-size='70' fill='white'>👨‍🍳</text></svg>">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%232ecc71' rx='20'/><text x='50%' y='50%' text-anchor='middle' dy='.35em' font-size='70' fill='white'>🍳</text></svg>">
     
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..600&display=swap" rel="stylesheet">
@@ -87,19 +86,88 @@
     </div>
 
     <script type="module">
-        import { ingredientsDB } from './modules/ingredientsDB.js';
-        import { recipesDB } from './modules/recipesDB.js';
-        import { RecipeMatcher } from './modules/recipeMatcher.js';
-        import { UIRenderer } from './modules/uiRenderer.js';
-        import { AIAssistant } from './modules/aiAssistant.js';
+        // Упрощённая версия без модулей - всё в одном файле
+        console.log("Приложение загружено!");
         
-        // Инициализация
-        const matcher = new RecipeMatcher(recipesDB);
-        const ui = new UIRenderer(ingredientsDB, matcher);
-        ui.init();
+        // Временные данные
+        const ingredientsList = ["🍅 Помидоры", "🥒 Огурцы", "🧀 Сыр", "🍗 Курица", "🥚 Яйца"];
+        let selectedIngredients = new Set();
         
-        const ai = new AIAssistant();
-        ai.init();
+        // Показать ингредиенты
+        const container = document.getElementById('ingredientsGroupsContainer');
+        if (container) {
+            container.innerHTML = '<div class="ingredient-group"><div class="group-header"><span>📦 Основные продукты</span></div><div class="group-items" id="simpleIngredients"></div></div>';
+            const itemsDiv = document.getElementById('simpleIngredients');
+            ingredientsList.forEach(ing => {
+                const btn = document.createElement('button');
+                btn.textContent = ing;
+                btn.className = 'ingredient-btn';
+                btn.onclick = () => {
+                    btn.classList.toggle('selected');
+                    if (btn.classList.contains('selected')) selectedIngredients.add(ing);
+                    else selectedIngredients.delete(ing);
+                };
+                itemsDiv.appendChild(btn);
+            });
+        }
+        
+        // Поиск рецептов
+        document.getElementById('findRecipesBtn')?.addEventListener('click', () => {
+            const listDiv = document.getElementById('recipesList');
+            if (selectedIngredients.size === 0) {
+                listDiv.innerHTML = '<div class="placeholder">⚠️ Выбери продукты!</div>';
+                return;
+            }
+            listDiv.innerHTML = '<div class="placeholder">✅ Рецепты появятся здесь, когда добавим базу рецептов</div>';
+        });
+        
+        // Гамбургер-меню
+        document.getElementById('menuToggle')?.addEventListener('click', () => {
+            document.getElementById('mobileNav')?.classList.toggle('open');
+        });
+        
+        // Переключение темы
+        document.querySelectorAll('.theme-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const theme = btn.getAttribute('data-theme');
+                document.body.classList.remove('theme-green', 'theme-orange');
+                document.body.classList.add(`theme-${theme}`);
+                document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+        
+        // Тип блюда
+        document.querySelectorAll('.type-buttons button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.type-buttons button').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+        
+        // ИИ-ассистент
+        const aiModal = document.getElementById('aiModal');
+        const openAiBtn = document.getElementById('openAiAssistantBtn');
+        const closeAi = document.querySelector('.close-ai');
+        const askBtn = document.getElementById('askAiBtn');
+        const aiQuestion = document.getElementById('aiQuestion');
+        const aiAnswer = document.getElementById('aiAnswer');
+        
+        openAiBtn?.addEventListener('click', () => { if(aiModal) aiModal.style.display = 'flex'; });
+        closeAi?.addEventListener('click', () => { if(aiModal) aiModal.style.display = 'none'; });
+        askBtn?.addEventListener('click', () => {
+            const q = aiQuestion?.value.trim();
+            if (!q) { if(aiAnswer) aiAnswer.innerHTML = '❓ Напиши вопрос!'; return; }
+            if(aiAnswer) aiAnswer.innerHTML = '🧑‍🍳 Совет: всегда пробуй блюдо в процессе готовки! Подробные рецепты добавим позже.';
+        });
+        
+        // Модалка рецепта
+        const modal = document.getElementById('recipeModal');
+        document.querySelector('.close')?.addEventListener('click', () => { if(modal) modal.style.display = 'none'; });
+        window.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; if (e.target === aiModal) aiModal.style.display = 'none'; };
+        
+        document.body.classList.add('theme-green');
+        console.log("✅ Приложение работает!");
     </script>
 </body>
 </html>
