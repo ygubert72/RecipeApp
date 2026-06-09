@@ -15,7 +15,7 @@
     <div class="app-container">
         <header>
             <button class="menu-toggle" id="menuToggle">☰</button>
-            <h1>👨‍🍳 Шеф-повар</h1>
+            <h1>Шеф-повар</h1>
             <div class="theme-switch">
                 <button data-theme="green" class="theme-btn active">🍃 Зеленый</button>
                 <button data-theme="orange" class="theme-btn">🍊 Оранжевый</button>
@@ -151,7 +151,7 @@
         let currentCuisine = "all";
 
         // ============================================
-        // ОТРИСОВКА ВСЕХ ГРУПП ПРОДУКТОВ
+        // ОТРИСОВКА ВСЕХ ГРУПП ПРОДУКТОВ (СВЕРНУТЫЕ)
         // ============================================
         
         function renderIngredients() {
@@ -166,10 +166,11 @@
                 
                 const header = document.createElement('div');
                 header.className = 'group-header';
-                header.innerHTML = `<span class="group-title">${group.name}</span><span class="group-toggle">▼</span>`;
+                header.innerHTML = `<span class="group-title">${group.name}</span><span class="group-toggle">▶</span>`;
                 
                 const itemsDiv = document.createElement('div');
                 itemsDiv.className = 'group-items';
+                itemsDiv.style.display = 'none'; // ВСЕ ГРУППЫ СВЕРНУТЫ ПРИ ЗАГРУЗКЕ
                 
                 group.items.forEach(item => {
                     const btn = document.createElement('button');
@@ -186,7 +187,7 @@
                     itemsDiv.appendChild(btn);
                 });
                 
-                let collapsed = false;
+                let collapsed = true; // начинаем со свёрнутого состояния
                 header.addEventListener('click', () => {
                     collapsed = !collapsed;
                     itemsDiv.style.display = collapsed ? 'none' : 'flex';
@@ -218,7 +219,7 @@
                     🎉 <strong>Выбрано продуктов: ${ingredientsList.length}</strong><br><br>
                     📋 Список: ${ingredientsList.slice(0, 10).join(', ')}${ingredientsList.length > 10 ? '...' : ''}<br><br>
                     ⏳ <strong>Рецепты появятся здесь!</strong><br>
-                    Сейчас я собираю для вас базу рецептов (уже 15 штук готово, скоро добавлю все).
+                    Сейчас я собираю для вас базу рецептов.
                 </div>
             `;
         }
@@ -300,7 +301,7 @@
             if (q.includes('заменить сливки')) return 'Сливки заменяют: кокосовое молоко, смесь молока с маслом, или густая сметана с молоком.';
             if (q.includes('сочное мясо')) return 'Маринуй в кефире/йогурте 2 часа, не пережаривай, дай отдохнуть 5-10 минут после готовки.';
             if (q.includes('хрустящая корочка')) return 'Обсуши продукты перед жаркой, используй панировку, жарь на хорошо разогретой сковороде.';
-            return `Отличный вопрос! Совет: всегда пробуй блюдо в процессе готовки. Для "${question}" рекомендую поискать рецепт в нашей базе, которую мы скоро пополним!`;
+            return `Отличный вопрос! Совет: всегда пробуй блюдо в процессе готовки.`;
         }
         
         // ============================================
@@ -311,7 +312,7 @@
         setupEventListeners();
         document.body.classList.add('theme-green');
         
-        console.log("✅ Приложение загружено! Доступно групп продуктов: " + ingredientsGroups.length);
+        console.log("✅ Приложение загружено! Групп продуктов: " + ingredientsGroups.length + " (все свёрнуты)");
     </script>
 </body>
 </html>
