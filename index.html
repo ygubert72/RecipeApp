@@ -1,195 +1,561 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Шеф-повар — Рецепты из продуктов дома</title>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    transition: background 0.3s, color 0.2s;
+    padding: 0;
+    background: #f5f7f2;
+}
+
+/* ТЕМА ЗЕЛЕНАЯ (по умолчанию) */
+body.theme-green {
+    --primary: #2ecc71;
+    --primary-dark: #27ae60;
+    --primary-light: #d5f5e3;
+    --bg-card: #ffffff;
+    --text: #1e2e1c;
+    --text-secondary: #5a7a55;
+    --accent-bg: #e8f8f0;
+    --border: #d5f5e3;
+    --shadow: rgba(46, 204, 113, 0.1);
+}
+
+/* ТЕМА ОРАНЖЕВАЯ */
+body.theme-orange {
+    --primary: #e67e22;
+    --primary-dark: #d35400;
+    --primary-light: #fdebd0;
+    --bg-card: #ffffff;
+    --text: #3e2a1f;
+    --text-secondary: #8b5a2b;
+    --accent-bg: #fef5e7;
+    --border: #fdebd0;
+    --shadow: rgba(230, 126, 34, 0.1);
+}
+
+body {
+    background: linear-gradient(135deg, var(--primary-light) 0%, var(--accent-bg) 100%);
+    color: var(--text);
+}
+
+.app-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* ========== HEADER ========== */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 16px 28px;
+    border-radius: 60px;
+    margin-bottom: 30px;
+    box-shadow: 0 8px 32px var(--shadow);
+    border: 1px solid rgba(255,255,255,0.5);
+}
+
+h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.menu-toggle {
+    display: none;
+    background: var(--primary-light);
+    border: none;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--primary);
+    transition: all 0.3s;
+}
+
+.menu-toggle:hover {
+    background: var(--primary);
+    color: white;
+    transform: scale(1.05);
+}
+
+.theme-switch {
+    display: flex;
+    gap: 12px;
+    background: var(--primary-light);
+    padding: 6px;
+    border-radius: 60px;
+}
+
+.theme-switch button {
+    background: transparent;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 50px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s;
+    font-size: 14px;
+}
+
+.theme-switch button:hover {
+    transform: translateY(-2px);
+}
+
+.theme-switch .active {
+    background: var(--primary);
+    color: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* ========== МОБИЛЬНОЕ МЕНЮ ========== */
+.mobile-nav {
+    display: none;
+    background: var(--bg-card);
+    border-radius: 28px;
+    margin-bottom: 24px;
+    padding: 20px;
+    box-shadow: 0 12px 40px var(--shadow);
+    border: 1px solid var(--border);
+}
+
+.mobile-nav.open {
+    display: block;
+    animation: slideDown 0.4s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.mobile-nav ul {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.mobile-nav hr {
+    margin: 12px 0;
+    border-color: var(--border);
+}
+
+.mobile-nav button {
+    background: var(--primary-light);
+    border: none;
+    padding: 12px 24px;
+    border-radius: 50px;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--text);
+    transition: all 0.3s;
+    font-size: 14px;
+}
+
+.mobile-nav button:hover {
+    background: var(--primary);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.mobile-nav .ai-assist-btn {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+}
+
+/* ========== ПАНЕЛЬ ФИЛЬТРОВ ========== */
+.filters-panel {
+    background: var(--bg-card);
+    border-radius: 48px;
+    padding: 32px;
+    margin-bottom: 40px;
+    box-shadow: 0 20px 40px var(--shadow);
+    border: 1px solid var(--border);
+    transition: transform 0.3s;
+}
+
+.filters-panel:hover {
+    transform: translateY(-4px);
+}
+
+.filters-panel h3 {
+    font-size: 1.4rem;
+    margin-bottom: 20px;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Группы продуктов */
+.ingredient-group {
+    margin-bottom: 20px;
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    overflow: hidden;
+    transition: all 0.3s;
+    background: var(--bg-card);
+}
+
+.group-header {
+    background: var(--accent-bg);
+    padding: 16px 20px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 700;
+    font-size: 1rem;
+    transition: all 0.3s;
+}
+
+.group-header:hover {
+    background: var(--primary-light);
+    padding-left: 28px;
+}
+
+.group-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.group-toggle {
+    font-size: 14px;
+    transition: transform 0.3s;
+    background: var(--primary);
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.group-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 16px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.ingredient-btn {
+    background: var(--primary-light);
+    border: none;
+    padding: 10px 18px;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.ingredient-btn:hover {
+    transform: scale(1.05);
+    background: var(--accent-bg);
+    box-shadow: 0 4px 12px var(--shadow);
+}
+
+.ingredient-btn.selected {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    box-shadow: 0 6px 16px rgba(46, 204, 113, 0.4);
+    transform: scale(1.02);
+}
+
+/* Типы блюд */
+.type-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin: 20px 0;
+}
+
+.type-buttons button {
+    background: var(--primary-light);
+    border: none;
+    padding: 12px 28px;
+    border-radius: 60px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--text);
+    flex: 1;
+    min-width: 100px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.type-buttons button:hover {
+    transform: translateY(-3px);
+    background: var(--accent-bg);
+}
+
+.type-buttons button.active {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    box-shadow: 0 8px 20px var(--shadow);
+}
+
+/* Кнопка поиска */
+.find-btn {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    border: none;
+    padding: 16px 32px;
+    font-size: 18px;
+    font-weight: 700;
+    border-radius: 60px;
+    margin-top: 24px;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.3s;
+    box-shadow: 0 8px 24px var(--shadow);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.find-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 32px var(--shadow);
+}
+
+/* Результаты */
+.results-area h2 {
+    font-size: 1.8rem;
+    margin-bottom: 24px;
+    color: var(--text);
+}
+
+.recipes-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 28px;
+    margin-top: 20px;
+}
+
+.placeholder {
+    text-align: center;
+    padding: 80px 40px;
+    background: var(--bg-card);
+    border-radius: 48px;
+    border: 2px dashed var(--border);
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+}
+
+/* Модальные окна */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(8px);
+    z-index: 1100;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: var(--bg-card);
+    max-width: 700px;
+    width: 90%;
+    border-radius: 48px;
+    padding: 32px;
+    max-height: 85vh;
+    overflow-y: auto;
+    position: relative;
+    animation: modalFadeIn 0.4s ease;
+    box-shadow: 0 32px 64px rgba(0,0,0,0.2);
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.close, .close-ai {
+    position: absolute;
+    right: 24px;
+    top: 24px;
+    font-size: 28px;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--primary-light);
+    transition: all 0.3s;
+    z-index: 10;
+}
+
+.close:hover, .close-ai:hover {
+    background: var(--primary);
+    color: white;
+    transform: rotate(90deg);
+}
+
+/* ИИ-ассистент */
+.ai-modal textarea {
+    width: 100%;
+    padding: 16px;
+    border-radius: 28px;
+    border: 1px solid var(--border);
+    margin: 16px 0;
+    font-family: inherit;
+    font-size: 14px;
+    resize: vertical;
+    background: var(--bg-card);
+}
+
+.ai-modal textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px var(--primary-light);
+}
+
+#askAiBtn {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    border: none;
+    padding: 14px 32px;
+    border-radius: 60px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 16px;
+    transition: all 0.3s;
+}
+
+#askAiBtn:hover {
+    transform: scale(1.02);
+    box-shadow: 0 8px 20px var(--shadow);
+}
+
+.ai-answer {
+    background: var(--accent-bg);
+    border-radius: 28px;
+    padding: 20px;
+    margin-top: 20px;
+    line-height: 1.6;
+    border-left: 4px solid var(--primary);
+}
+
+/* Адаптив */
+@media (max-width: 768px) {
+    .app-container {
+        padding: 12px;
+    }
     
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%232ecc71' rx='20'/><text x='50%' y='50%' text-anchor='middle' dy='.35em' font-size='70' fill='white'>👨‍🍳</text></svg>">
+    .menu-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
     
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..600&display=swap" rel="stylesheet">
-</head>
-<body>
-    <div class="app-container">
-        <header>
-            <button class="menu-toggle" id="menuToggle">☰</button>
-            <h1>👨‍🍳 Шеф-повар</h1>
-            <div class="theme-switch">
-                <button data-theme="green" class="theme-btn active">🍃 Зеленый</button>
-                <button data-theme="orange" class="theme-btn">🍊 Оранжевый</button>
-            </div>
-        </header>
+    .theme-switch {
+        margin-top: 12px;
+        width: 100%;
+        justify-content: center;
+    }
+    
+    header {
+        padding: 12px 20px;
+        border-radius: 40px;
+    }
+    
+    h1 {
+        font-size: 1.3rem;
+    }
+    
+    .filters-panel {
+        padding: 20px;
+        border-radius: 32px;
+    }
+    
+    .filters-panel h3 {
+        font-size: 1.2rem;
+    }
+    
+    .group-header {
+        padding: 12px 16px;
+        font-size: 14px;
+    }
+    
+    .ingredient-btn {
+        padding: 6px 12px;
+        font-size: 11px;
+    }
+    
+    .type-buttons button {
+        padding: 8px 12px;
+        font-size: 12px;
+        min-width: 70px;
+    }
+    
+    .recipes-list {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .modal-content {
+        padding: 20px;
+        width: 95%;
+    }
+}
 
-        <nav class="mobile-nav" id="mobileNav">
-            <ul>
-                <li><button class="nav-category" data-category="all">🏠 Все рецепты</button></li>
-                <li><button class="nav-category" data-category="russian">🍞 Русская</button></li>
-                <li><button class="nav-category" data-category="eastern">🥘 Восточная</button></li>
-                <li><button class="nav-category" data-category="european">🍷 Европейская</button></li>
-                <li><hr></li>
-                <li><button class="nav-module" data-module="pp">🥗 ПП-рецепты</button></li>
-                <li><button class="nav-module" data-module="cocktails">🍸 Коктейли</button></li>
-                <li><button class="nav-module" data-module="smoothies">🥤 Смузи</button></li>
-                <li><button id="openAiAssistantBtn" class="ai-assist-btn">🤖 ИИ-шеф</button></li>
-            </ul>
-        </nav>
+/* Скроллбар */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
 
-        <main>
-            <div class="filters-panel">
-                <div class="ingredient-selector">
-                    <h3>📦 Что есть дома?</h3>
-                    <div id="ingredientsGroupsContainer"></div>
-                </div>
+::-webkit-scrollbar-track {
+    background: var(--primary-light);
+    border-radius: 10px;
+}
 
-                <div class="dish-type">
-                    <h3>🍽️ Тип блюда</h3>
-                    <div class="type-buttons">
-                        <button data-type="all" class="active">🏠 Все</button>
-                        <button data-type="salad">🥗 Салат</button>
-                        <button data-type="snack">🍢 Закуска</button>
-                        <button data-type="soup">🥣 Суп</button>
-                        <button data-type="main">🍛 Второе</button>
-                        <button data-type="dessert">🍰 Десерт</button>
-                        <button data-type="drink">🥤 Напиток</button>
-                    </div>
-                </div>
+::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 10px;
+}
 
-                <button id="findRecipesBtn" class="find-btn">✨ Найти рецепты</button>
-            </div>
-
-            <div class="results-area">
-                <h2>Рецепты</h2>
-                <div id="recipesList" class="recipes-list">
-                    <div class="placeholder">✅ Выбери продукты и нажми "Найти"</div>
-                </div>
-            </div>
-        </main>
-
-        <div id="recipeModal" class="modal">
-            <div class="modal-content">
-                <span class="close">&times;</span>
-                <div id="modalRecipeBody"></div>
-            </div>
-        </div>
-
-        <div id="aiModal" class="modal">
-            <div class="modal-content ai-modal">
-                <span class="close-ai">&times;</span>
-                <h2>🤖 ИИ-шеф-помощник</h2>
-                <p>Спроси о замене продуктов, тонкостях или технике:</p>
-                <textarea id="aiQuestion" rows="3" placeholder="Например: чем заменить сливки в соусе?"></textarea>
-                <button id="askAiBtn">Спросить</button>
-                <div id="aiAnswer" class="ai-answer"></div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        const ingredientsGroups = [
-            { name: "🥩 Мясо и птица", items: ["Говядина", "Свинина", "Баранина", "Кролик", "Курица", "Индейка", "Утка", "Фарш свиной", "Фарш говяжий", "Фарш куриный", "Печень говяжья", "Печень куриная"] },
-            { name: "🐟 Рыба и морепродукты", items: ["Лосось", "Семга", "Тунец", "Скумбрия", "Сельдь", "Треска", "Минтай", "Креветки", "Кальмары", "Мидии", "Рыбные консервы", "Шпроты", "Печень трески"] },
-            { name: "🥬 Овощи", items: ["Картофель", "Морковь", "Лук репчатый", "Лук зеленый", "Чеснок", "Капуста белокочанная", "Брокколи", "Цветная капуста", "Помидоры", "Огурцы", "Болгарский перец", "Перец красный жгучий", "Кабачки", "Баклажаны", "Свекла", "Шпинат", "Руккола", "Сельдерей"] },
-            { name: "🍎 Фрукты и ягоды", items: ["Яблоки", "Груши", "Бананы", "Апельсины", "Лимоны", "Мандарины", "Киви", "Виноград", "Клубника", "Малина", "Черника"] },
-            { name: "🍄 Грибы", items: ["Шампиньоны", "Вешенки", "Белые грибы", "Лисички", "Лесные грибы"] },
-            { name: "🌿 Зелень и специи", items: ["Укроп", "Петрушка", "Кинза", "Базилик", "Мята", "Розмарин", "Укроп", "Петрушка"] },
-            { name: "🍚 Крупы и бобовые", items: ["Гречка", "Рис", "Овсянка", "Пшено", "Перловка", "Булгур", "Чечевица", "Фасоль", "Горох", "Бобы"] },
-            { name: "🍝 Макаронные изделия", items: ["Спагетти", "Феттучини", "Лапша яичная", "Лапша рисовая", "Вермишель", "Рожки"] },
-            { name: "🥛 Молочные продукты", items: ["Молоко", "Сливки", "Сметана", "Кефир", "Ряженка", "Йогурт", "Творог", "Сыр твердый", "Сыр моцарелла", "Сыр фета", "Сулугуни", "Брынза", "Масло сливочное"] },
-            { name: "🥚 Яйца", items: ["Яйца куриные", "Яйца перепелиные"] },
-            { name: "🍞 Хлеб и выпечка", items: ["Хлеб белый", "Хлеб ржаной", "Батон", "Лаваш", "Мука", "Дрожжи", "Печенье"] },
-            { name: "🥫 Консервы", items: ["Оливки", "Маслины", "Кукуруза", "Горошек", "Томатная паста", "Огурцы маринованные", "Грибы маринованные"] },
-            { name: "🧴 Масла и соусы", items: ["Масло подсолнечное", "Масло оливковое", "Соевый соус", "Майонез", "Кетчуп", "Горчица"] },
-            { name: "🥜 Орехи", items: ["Грецкий орех", "Фундук", "Миндаль", "Кешью", "Арахис"] },
-            { name: "🍰 Сладости", items: ["Сахар", "Мед", "Варенье", "Джем", "Шоколад"] }
-        ];
-
-        let selectedIngredients = new Set();
-        let selectedType = "all";
-
-        function renderIngredients() {
-            const container = document.getElementById('ingredientsGroupsContainer');
-            if (!container) return;
-            container.innerHTML = '';
-            ingredientsGroups.forEach(group => {
-                const groupDiv = document.createElement('div');
-                groupDiv.className = 'ingredient-group';
-                const header = document.createElement('div');
-                header.className = 'group-header';
-                header.innerHTML = `<span class="group-title">${group.name}</span><span class="group-toggle">▶</span>`;
-                const itemsDiv = document.createElement('div');
-                itemsDiv.className = 'group-items';
-                itemsDiv.style.display = 'none';
-                group.items.forEach(item => {
-                    const btn = document.createElement('button');
-                    btn.textContent = item;
-                    btn.className = 'ingredient-btn';
-                    btn.onclick = () => {
-                        btn.classList.toggle('selected');
-                        if (btn.classList.contains('selected')) selectedIngredients.add(item);
-                        else selectedIngredients.delete(item);
-                    };
-                    itemsDiv.appendChild(btn);
-                });
-                let collapsed = true;
-                header.onclick = () => {
-                    collapsed = !collapsed;
-                    itemsDiv.style.display = collapsed ? 'none' : 'flex';
-                    header.querySelector('.group-toggle').textContent = collapsed ? '▶' : '▼';
-                };
-                groupDiv.appendChild(header);
-                groupDiv.appendChild(itemsDiv);
-                container.appendChild(groupDiv);
-            });
-        }
-
-        function findRecipes() {
-            const resultsDiv = document.getElementById('recipesList');
-            if (selectedIngredients.size === 0) {
-                resultsDiv.innerHTML = '<div class="placeholder">⚠️ Выберите продукты</div>';
-                return;
-            }
-            resultsDiv.innerHTML = `<div class="placeholder">🎉 Выбрано продуктов: ${selectedIngredients.size}<br><br>📋 ${Array.from(selectedIngredients).slice(0, 10).join(', ')}<br><br>⏳ Рецепты появятся здесь!</div>`;
-        }
-
-        function setupEventListeners() {
-            document.getElementById('menuToggle')?.addEventListener('click', () => {
-                document.getElementById('mobileNav')?.classList.toggle('open');
-            });
-            document.querySelectorAll('.theme-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const theme = btn.getAttribute('data-theme');
-                    document.body.classList.remove('theme-green', 'theme-orange');
-                    document.body.classList.add(`theme-${theme}`);
-                    document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                });
-            });
-            document.querySelectorAll('.type-buttons button').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    document.querySelectorAll('.type-buttons button').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    selectedType = btn.getAttribute('data-type');
-                });
-            });
-            document.getElementById('findRecipesBtn')?.addEventListener('click', findRecipes);
-            const aiModal = document.getElementById('aiModal');
-            document.getElementById('openAiAssistantBtn')?.addEventListener('click', () => { if(aiModal) aiModal.style.display = 'flex'; });
-            document.querySelector('.close-ai')?.addEventListener('click', () => { if(aiModal) aiModal.style.display = 'none'; });
-            document.getElementById('askAiBtn')?.addEventListener('click', () => {
-                const q = document.getElementById('aiQuestion')?.value.trim();
-                const answerDiv = document.getElementById('aiAnswer');
-                if (!q) { if(answerDiv) answerDiv.innerHTML = '❓ Напишите вопрос'; return; }
-                if(answerDiv) answerDiv.innerHTML = '🧑‍🍳 Совет: всегда пробуй блюдо в процессе готовки!';
-            });
-            const modal = document.getElementById('recipeModal');
-            document.querySelector('.close')?.addEventListener('click', () => { if(modal) modal.style.display = 'none'; });
-            window.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; if (e.target === aiModal) aiModal.style.display = 'none'; };
-        }
-        
-        renderIngredients();
-        setupEventListeners();
-        document.body.classList.add('theme-green');
-    </script>
-</body>
-</html>
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-dark);
+}
