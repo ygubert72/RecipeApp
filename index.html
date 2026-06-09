@@ -87,7 +87,7 @@
         </div>
     </div>
 
-    <script>
+    <script type="module">
         // ============================================
         // ПОЛНАЯ БАЗА ПРОДУКТОВ С ГРУППИРОВКОЙ
         // ============================================
@@ -158,6 +158,11 @@
         let selectedIngredients = new Set();
         let selectedType = "all";
         let currentCuisine = "all";
+        
+        // Импорт рецептов из модульной системы
+        import { allRecipes } from './modules/recipes/index.js';
+        
+        console.log(`✅ Загружено рецептов: ${allRecipes.length}`);
 
         // ============================================
         // ОТРИСОВКА ВСЕХ ГРУПП ПРОДУКТОВ (СВЕРНУТЫЕ)
@@ -210,27 +215,88 @@
         }
 
         // ============================================
-        // ПОИСК РЕЦЕПТОВ (ВРЕМЕННО)
+        // ПОИСК РЕЦЕПТОВ (РАБОТАЕТ С РЕАЛЬНОЙ БАЗОЙ)
         // ============================================
         
         function findRecipes() {
             const resultsDiv = document.getElementById('recipesList');
             
             if (selectedIngredients.size === 0) {
-                resultsDiv.innerHTML = '<div class="placeholder">⚠️ Выберите продукты, которые есть дома</div>';
+                resultsDiv.innerHTML = '<div class="placeholder">⚠️ Выберите продукты в холодильнике</div>';
                 return;
             }
             
-            const ingredientsList = Array.from(selectedIngredients);
+            const userIngredients = Array.from(selectedIngredients);
             
-            resultsDiv.innerHTML = `
-                <div class="placeholder">
-                    🎉 <strong>Выбрано продуктов: ${ingredientsList.length}</strong><br><br>
-                    📋 Список: ${ingredientsList.slice(0, 10).join(', ')}${ingredientsList.length > 10 ? '...' : ''}<br><br>
-                    ⏳ <strong>Рецепты появятся здесь!</strong><br>
-                    Скоро добавлю полную базу рецептов.
+            // Фильтрация рецептов по выбранным продуктам и типу блюда
+            let matchedRecipes = allRecipes.filter(recipe => {
+                // Фильтр по типу блюда
+                if (selectedType !== "all" && recipe.type !== selectedType) return false;
+                
+                // Фильтр по кухне
+                if (currentCuisine !== "all" && recipe.cuisine !== currentCuisine) return false;
+                
+                // Проверка: хотя бы один ингредиент рецепта есть у пользователя
+                const hasMatchingIngredient = recipe.ingredients.some(recipeIng => 
+                    userIngredients.some(userIng => 
+                        userIng.toLowerCase().includes(recipeIng.toLowerCase()) ||
+                        recipeIng.toLowerCase().includes(userIng.toLowerCase())
+                    )
+                );
+                
+                return hasMatchingIngredient;
+            });
+            
+            if (matchedRecipes.length === 0) {
+                resultsDiv.innerHTML = '<div class="placeholder">😕 Нет рецептов с выбранными продуктами. Попробуйте добавить ещё ингредиенты.</div>';
+                return;
+            }
+            
+            // Отрисовка карточек рецептов
+            resultsDiv.innerHTML = matchedRecipes.map(recipe => `
+                <div class="recipe-card" data-id="${recipe.id}">
+                    <div class="recipe-img-placeholder">🍽️</div>
+                    <h4>${recipe.name}</h4>
+                    <p>${getCuisineEmoji(recipe.cuisine)} ${getCuisineName(recipe.cuisine)} • ${recipe.type}</p>
+                    <div class="recipe-meta">⏱️ ${recipe.cookingTime || 30} мин • 🔥 ${recipe.calories || '?'} ккал</div>
+                    <small>📋 Нужно: ${recipe.ingredients.slice(0, 4).join(', ')}${recipe.ingredients.length > 4 ? '...' : ''}</small>
                 </div>
+            `).join('');
+            
+            // Добавляем обработчики кликов по карточкам
+            document.querySelectorAll('.recipe-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    const id = parseInt(card.getAttribute('data-id'));
+                    const recipe = matchedRecipes.find(r => r.id === id);
+                    if (recipe) showRecipeModal(recipe);
+                });
+            });
+        }
+        
+        function getCuisineEmoji(cuisine) {
+            const map = { russian: '🍞', eastern: '🥘', european: '🍷' };
+            return map[cuisine] || '🍽️';
+        }
+        
+        function getCuisineName(cuisine) {
+            const map = { russian: 'Русская', eastern: 'Восточная', european: 'Европейская' };
+            return map[cuisine] || cuisine;
+        }
+        
+        function showRecipeModal(recipe) {
+            const modalBody = document.getElementById('modalRecipeBody');
+            modalBody.innerHTML = `
+                <h2>${recipe.name}</h2>
+                <div class="recipe-img-placeholder" style="height: 150px; margin-bottom: 15px;">🍽️</div>
+                <p><strong>🍴 Кухня:</strong> ${getCuisineName(recipe.cuisine)} | <strong>⏱️ Время:</strong> ${recipe.cookingTime || 30} мин | <strong>🔥 Калории:</strong> ${recipe.calories || '?'} ккал</p>
+                <h3>📋 Ингредиенты:</h3>
+                <ul>${recipe.ingredients.map(i => `<li>${i}</li>`).join('')}</ul>
+                <h3>👨‍🍳 Пошаговый рецепт:</h3>
+                <div class="steps-list">${recipe.steps.map(s => `<p>${s}</p>`).join('')}</div>
+                <h3>💡 Совет шефа:</h3>
+                <p class="chef-tip">${recipe.tip || 'Подавай с любовью и свежей зеленью!'}</p>
             `;
+            document.getElementById('recipeModal').style.display = 'flex';
         }
 
         // ============================================
