@@ -2,9 +2,13 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Шеф-повар</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Шеф-повар — Рецепты из продуктов дома</title>
+    
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%232ecc71' rx='20'/><text x='50%' y='50%' text-anchor='middle' dy='.35em' font-size='70' fill='white'>👨‍🍳</text></svg>">
+    
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..600&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="app-container">
@@ -12,33 +16,43 @@
             <button class="menu-toggle" id="menuToggle">☰</button>
             <h1>👨‍🍳 Шеф-повар</h1>
             <div class="theme-switch">
-                <button data-theme="green" class="theme-btn active">Зеленый</button>
-                <button data-theme="orange" class="theme-btn">Оранжевый</button>
+                <button data-theme="green" class="theme-btn active">🍃 Зеленый</button>
+                <button data-theme="orange" class="theme-btn">🍊 Оранжевый</button>
             </div>
         </header>
 
         <nav class="mobile-nav" id="mobileNav">
             <ul>
-                <li><button class="nav-category" data-category="all">Все рецепты</button></li>
-                <li><button class="nav-category" data-category="russian">Русская</button></li>
-                <li><button class="nav-category" data-category="eastern">Восточная</button></li>
-                <li><button class="nav-category" data-category="european">Европейская</button></li>
-                <li><button id="openAiAssistantBtn">🤖 ИИ-шеф</button></li>
+                <li><button class="nav-category" data-category="all">🏠 Все рецепты</button></li>
+                <li><button class="nav-category" data-category="russian">🍞 Русская</button></li>
+                <li><button class="nav-category" data-category="eastern">🥘 Восточная</button></li>
+                <li><button class="nav-category" data-category="european">🍷 Европейская</button></li>
+                <li><hr></li>
+                <li><button class="nav-module" data-module="pp">🥗 ПП-рецепты</button></li>
+                <li><button class="nav-module" data-module="cocktails">🍸 Коктейли</button></li>
+                <li><button class="nav-module" data-module="smoothies">🥤 Смузи</button></li>
+                <li><button id="openAiAssistantBtn" class="ai-assist-btn">🤖 ИИ-шеф</button></li>
             </ul>
         </nav>
 
         <main>
             <div class="filters-panel">
-                <h3>📦 Что есть дома?</h3>
-                <div id="ingredientsGroupsContainer"></div>
+                <div class="ingredient-selector">
+                    <h3>📦 Что есть дома?</h3>
+                    <div id="ingredientsGroupsContainer"></div>
+                </div>
 
-                <h3>🍽️ Тип блюда</h3>
-                <div class="type-buttons">
-                    <button data-type="all" class="active">Все</button>
-                    <button data-type="salad">Салат</button>
-                    <button data-type="soup">Суп</button>
-                    <button data-type="main">Второе</button>
-                    <button data-type="dessert">Десерт</button>
+                <div class="dish-type">
+                    <h3>🍽️ Тип блюда</h3>
+                    <div class="type-buttons">
+                        <button data-type="all" class="active">🏠 Все</button>
+                        <button data-type="salad">🥗 Салат</button>
+                        <button data-type="snack">🍢 Закуска</button>
+                        <button data-type="soup">🥣 Суп</button>
+                        <button data-type="main">🍛 Второе</button>
+                        <button data-type="dessert">🍰 Десерт</button>
+                        <button data-type="drink">🥤 Напиток</button>
+                    </div>
                 </div>
 
                 <button id="findRecipesBtn" class="find-btn">✨ Найти рецепты</button>
@@ -47,92 +61,135 @@
             <div class="results-area">
                 <h2>Рецепты</h2>
                 <div id="recipesList" class="recipes-list">
-                    <div class="placeholder">Выбери продукты и нажми "Найти"</div>
+                    <div class="placeholder">✅ Выбери продукты и нажми "Найти"</div>
                 </div>
             </div>
         </main>
 
-        <div id="aiModal" class="modal">
+        <div id="recipeModal" class="modal">
             <div class="modal-content">
+                <span class="close">&times;</span>
+                <div id="modalRecipeBody"></div>
+            </div>
+        </div>
+
+        <div id="aiModal" class="modal">
+            <div class="modal-content ai-modal">
                 <span class="close-ai">&times;</span>
-                <h2>🤖 ИИ-шеф</h2>
-                <textarea id="aiQuestion" rows="3" placeholder="Спроси о готовке..."></textarea>
+                <h2>🤖 ИИ-шеф-помощник</h2>
+                <p>Спроси о замене продуктов, тонкостях или технике:</p>
+                <textarea id="aiQuestion" rows="3" placeholder="Например: чем заменить сливки в соусе?"></textarea>
                 <button id="askAiBtn">Спросить</button>
-                <div id="aiAnswer"></div>
+                <div id="aiAnswer" class="ai-answer"></div>
             </div>
         </div>
     </div>
 
     <script>
-        // Продукты
-        const groups = [
-            { name: "🥩 Мясо", items: ["Курица", "Говядина", "Свинина"] },
-            { name: "🥬 Овощи", items: ["Помидоры", "Огурцы", "Картофель"] },
-            { name: "🥛 Молочка", items: ["Молоко", "Сыр", "Масло"] }
+        const ingredientsGroups = [
+            { name: "🥩 Мясо и птица", items: ["Говядина", "Свинина", "Баранина", "Кролик", "Курица", "Индейка", "Утка", "Фарш свиной", "Фарш говяжий", "Фарш куриный", "Печень говяжья", "Печень куриная"] },
+            { name: "🐟 Рыба и морепродукты", items: ["Лосось", "Семга", "Тунец", "Скумбрия", "Сельдь", "Треска", "Минтай", "Креветки", "Кальмары", "Мидии", "Рыбные консервы", "Шпроты", "Печень трески"] },
+            { name: "🥬 Овощи", items: ["Картофель", "Морковь", "Лук репчатый", "Лук зеленый", "Чеснок", "Капуста белокочанная", "Брокколи", "Цветная капуста", "Помидоры", "Огурцы", "Болгарский перец", "Перец красный жгучий", "Кабачки", "Баклажаны", "Свекла", "Шпинат", "Руккола", "Сельдерей"] },
+            { name: "🍎 Фрукты и ягоды", items: ["Яблоки", "Груши", "Бананы", "Апельсины", "Лимоны", "Мандарины", "Киви", "Виноград", "Клубника", "Малина", "Черника"] },
+            { name: "🍄 Грибы", items: ["Шампиньоны", "Вешенки", "Белые грибы", "Лисички", "Лесные грибы"] },
+            { name: "🌿 Зелень и специи", items: ["Укроп", "Петрушка", "Кинза", "Базилик", "Мята", "Розмарин", "Укроп", "Петрушка"] },
+            { name: "🍚 Крупы и бобовые", items: ["Гречка", "Рис", "Овсянка", "Пшено", "Перловка", "Булгур", "Чечевица", "Фасоль", "Горох", "Бобы"] },
+            { name: "🍝 Макаронные изделия", items: ["Спагетти", "Феттучини", "Лапша яичная", "Лапша рисовая", "Вермишель", "Рожки"] },
+            { name: "🥛 Молочные продукты", items: ["Молоко", "Сливки", "Сметана", "Кефир", "Ряженка", "Йогурт", "Творог", "Сыр твердый", "Сыр моцарелла", "Сыр фета", "Сулугуни", "Брынза", "Масло сливочное"] },
+            { name: "🥚 Яйца", items: ["Яйца куриные", "Яйца перепелиные"] },
+            { name: "🍞 Хлеб и выпечка", items: ["Хлеб белый", "Хлеб ржаной", "Батон", "Лаваш", "Мука", "Дрожжи", "Печенье"] },
+            { name: "🥫 Консервы", items: ["Оливки", "Маслины", "Кукуруза", "Горошек", "Томатная паста", "Огурцы маринованные", "Грибы маринованные"] },
+            { name: "🧴 Масла и соусы", items: ["Масло подсолнечное", "Масло оливковое", "Соевый соус", "Майонез", "Кетчуп", "Горчица"] },
+            { name: "🥜 Орехи", items: ["Грецкий орех", "Фундук", "Миндаль", "Кешью", "Арахис"] },
+            { name: "🍰 Сладости", items: ["Сахар", "Мед", "Варенье", "Джем", "Шоколад"] }
         ];
 
-        let selected = new Set();
+        let selectedIngredients = new Set();
+        let selectedType = "all";
 
-        // Отрисовка
-        const container = document.getElementById('ingredientsGroupsContainer');
-        groups.forEach(g => {
-            const div = document.createElement('div');
-            div.className = 'ingredient-group';
-            div.innerHTML = `<div class="group-header"><span>${g.name}</span><span class="group-toggle">▶</span></div><div class="group-items" style="display:none"></div>`;
-            const itemsDiv = div.querySelector('.group-items');
-            g.items.forEach(item => {
-                const btn = document.createElement('button');
-                btn.textContent = item;
-                btn.className = 'ingredient-btn';
-                btn.onclick = () => {
-                    btn.classList.toggle('selected');
-                    if (btn.classList.contains('selected')) selected.add(item);
-                    else selected.delete(item);
+        function renderIngredients() {
+            const container = document.getElementById('ingredientsGroupsContainer');
+            if (!container) return;
+            container.innerHTML = '';
+            ingredientsGroups.forEach(group => {
+                const groupDiv = document.createElement('div');
+                groupDiv.className = 'ingredient-group';
+                const header = document.createElement('div');
+                header.className = 'group-header';
+                header.innerHTML = `<span class="group-title">${group.name}</span><span class="group-toggle">▶</span>`;
+                const itemsDiv = document.createElement('div');
+                itemsDiv.className = 'group-items';
+                itemsDiv.style.display = 'none';
+                group.items.forEach(item => {
+                    const btn = document.createElement('button');
+                    btn.textContent = item;
+                    btn.className = 'ingredient-btn';
+                    btn.onclick = () => {
+                        btn.classList.toggle('selected');
+                        if (btn.classList.contains('selected')) selectedIngredients.add(item);
+                        else selectedIngredients.delete(item);
+                    };
+                    itemsDiv.appendChild(btn);
+                });
+                let collapsed = true;
+                header.onclick = () => {
+                    collapsed = !collapsed;
+                    itemsDiv.style.display = collapsed ? 'none' : 'flex';
+                    header.querySelector('.group-toggle').textContent = collapsed ? '▶' : '▼';
                 };
-                itemsDiv.appendChild(btn);
+                groupDiv.appendChild(header);
+                groupDiv.appendChild(itemsDiv);
+                container.appendChild(groupDiv);
             });
-            const header = div.querySelector('.group-header');
-            let collapsed = true;
-            header.onclick = () => {
-                collapsed = !collapsed;
-                itemsDiv.style.display = collapsed ? 'none' : 'flex';
-                header.querySelector('.group-toggle').textContent = collapsed ? '▶' : '▼';
-            };
-            container.appendChild(div);
-        });
+        }
 
-        // Поиск
-        document.getElementById('findRecipesBtn').onclick = () => {
-            const results = document.getElementById('recipesList');
-            if (selected.size === 0) results.innerHTML = '<div class="placeholder">Выберите продукты</div>';
-            else results.innerHTML = `<div class="placeholder">Выбрано: ${selected.size} продуктов<br>Рецепты появятся позже</div>`;
-        };
+        function findRecipes() {
+            const resultsDiv = document.getElementById('recipesList');
+            if (selectedIngredients.size === 0) {
+                resultsDiv.innerHTML = '<div class="placeholder">⚠️ Выберите продукты</div>';
+                return;
+            }
+            resultsDiv.innerHTML = `<div class="placeholder">🎉 Выбрано продуктов: ${selectedIngredients.size}<br><br>📋 ${Array.from(selectedIngredients).slice(0, 10).join(', ')}<br><br>⏳ Рецепты появятся здесь!</div>`;
+        }
 
-        // Тема
-        document.querySelectorAll('.theme-btn').forEach(btn => {
-            btn.onclick = () => {
-                const theme = btn.getAttribute('data-theme');
-                document.body.classList.remove('theme-green', 'theme-orange');
-                document.body.classList.add(`theme-${theme}`);
-                document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-            };
-        });
-
-        // Меню
-        document.getElementById('menuToggle').onclick = () => {
-            document.getElementById('mobileNav').classList.toggle('open');
-        };
-
-        // ИИ
-        const aiModal = document.getElementById('aiModal');
-        document.getElementById('openAiAssistantBtn').onclick = () => aiModal.style.display = 'flex';
-        document.querySelector('.close-ai').onclick = () => aiModal.style.display = 'none';
-        document.getElementById('askAiBtn').onclick = () => {
-            const q = document.getElementById('aiQuestion').value;
-            document.getElementById('aiAnswer').innerHTML = q ? '🧑‍🍳 Совет: всегда пробуй блюдо!' : 'Напиши вопрос';
-        };
-        window.onclick = (e) => { if (e.target === aiModal) aiModal.style.display = 'none'; };
+        function setupEventListeners() {
+            document.getElementById('menuToggle')?.addEventListener('click', () => {
+                document.getElementById('mobileNav')?.classList.toggle('open');
+            });
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const theme = btn.getAttribute('data-theme');
+                    document.body.classList.remove('theme-green', 'theme-orange');
+                    document.body.classList.add(`theme-${theme}`);
+                    document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                });
+            });
+            document.querySelectorAll('.type-buttons button').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.type-buttons button').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    selectedType = btn.getAttribute('data-type');
+                });
+            });
+            document.getElementById('findRecipesBtn')?.addEventListener('click', findRecipes);
+            const aiModal = document.getElementById('aiModal');
+            document.getElementById('openAiAssistantBtn')?.addEventListener('click', () => { if(aiModal) aiModal.style.display = 'flex'; });
+            document.querySelector('.close-ai')?.addEventListener('click', () => { if(aiModal) aiModal.style.display = 'none'; });
+            document.getElementById('askAiBtn')?.addEventListener('click', () => {
+                const q = document.getElementById('aiQuestion')?.value.trim();
+                const answerDiv = document.getElementById('aiAnswer');
+                if (!q) { if(answerDiv) answerDiv.innerHTML = '❓ Напишите вопрос'; return; }
+                if(answerDiv) answerDiv.innerHTML = '🧑‍🍳 Совет: всегда пробуй блюдо в процессе готовки!';
+            });
+            const modal = document.getElementById('recipeModal');
+            document.querySelector('.close')?.addEventListener('click', () => { if(modal) modal.style.display = 'none'; });
+            window.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; if (e.target === aiModal) aiModal.style.display = 'none'; };
+        }
+        
+        renderIngredients();
+        setupEventListeners();
+        document.body.classList.add('theme-green');
     </script>
 </body>
 </html>
