@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Шеф-повар — Рецепты из продуктов дома</title>
     
+    <!-- Фавикон -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%232ecc71' rx='20'/><text x='50%' y='50%' text-anchor='middle' dy='.35em' font-size='70' fill='white'>👨‍🍳</text></svg>">
     
     <link rel="stylesheet" href="style.css">
@@ -86,76 +87,160 @@
     </div>
 
     <script>
+        // ============================================
+        // ПОЛНАЯ БАЗА ПРОДУКТОВ С ГРУППИРОВКОЙ
+        // ============================================
+        
         const ingredientsGroups = [
-            { name: "🥩 Мясо и птица", items: ["Говядина", "Свинина", "Баранина", "Кролик", "Курица", "Индейка", "Утка", "Фарш свиной", "Фарш говяжий", "Фарш куриный", "Печень говяжья", "Печень куриная"] },
-            { name: "🐟 Рыба и морепродукты", items: ["Лосось", "Семга", "Тунец", "Скумбрия", "Сельдь", "Треска", "Минтай", "Креветки", "Кальмары", "Мидии", "Рыбные консервы", "Шпроты", "Печень трески"] },
-            { name: "🥬 Овощи", items: ["Картофель", "Морковь", "Лук репчатый", "Лук зеленый", "Чеснок", "Капуста белокочанная", "Брокколи", "Цветная капуста", "Помидоры", "Огурцы", "Болгарский перец", "Перец красный жгучий", "Кабачки", "Баклажаны", "Свекла", "Шпинат", "Руккола", "Сельдерей"] },
-            { name: "🍎 Фрукты и ягоды", items: ["Яблоки", "Груши", "Бананы", "Апельсины", "Лимоны", "Мандарины", "Киви", "Виноград", "Клубника", "Малина", "Черника"] },
-            { name: "🍄 Грибы", items: ["Шампиньоны", "Вешенки", "Белые грибы", "Лисички", "Лесные грибы"] },
-            { name: "🌿 Зелень и специи", items: ["Укроп", "Петрушка", "Кинза", "Базилик", "Мята", "Розмарин", "Укроп", "Петрушка"] },
-            { name: "🍚 Крупы и бобовые", items: ["Гречка", "Рис", "Овсянка", "Пшено", "Перловка", "Булгур", "Чечевица", "Фасоль", "Горох", "Бобы"] },
-            { name: "🍝 Макаронные изделия", items: ["Спагетти", "Феттучини", "Лапша яичная", "Лапша рисовая", "Вермишель", "Рожки"] },
-            { name: "🥛 Молочные продукты", items: ["Молоко", "Сливки", "Сметана", "Кефир", "Ряженка", "Йогурт", "Творог", "Сыр твердый", "Сыр моцарелла", "Сыр фета", "Сулугуни", "Брынза", "Масло сливочное"] },
-            { name: "🥚 Яйца", items: ["Яйца куриные", "Яйца перепелиные"] },
-            { name: "🍞 Хлеб и выпечка", items: ["Хлеб белый", "Хлеб ржаной", "Батон", "Лаваш", "Мука", "Дрожжи", "Печенье"] },
-            { name: "🥫 Консервы", items: ["Оливки", "Маслины", "Кукуруза", "Горошек", "Томатная паста", "Огурцы маринованные", "Грибы маринованные"] },
-            { name: "🧴 Масла и соусы", items: ["Масло подсолнечное", "Масло оливковое", "Соевый соус", "Майонез", "Кетчуп", "Горчица"] },
-            { name: "🥜 Орехи", items: ["Грецкий орех", "Фундук", "Миндаль", "Кешью", "Арахис"] },
-            { name: "🍰 Сладости", items: ["Сахар", "Мед", "Варенье", "Джем", "Шоколад"] }
+            {
+                name: "🥩 Мясо и птица",
+                items: ["Говядина", "Свинина", "Баранина", "Кролик", "Курица", "Индейка", "Утка", "Фарш свиной", "Фарш говяжий", "Фарш куриный", "Печень говяжья", "Печень куриная"]
+            },
+            {
+                name: "🐟 Рыба и морепродукты",
+                items: ["Лосось", "Семга", "Тунец", "Скумбрия", "Сельдь", "Треска", "Минтай", "Креветки", "Кальмары", "Мидии", "Рыбные консервы", "Шпроты", "Печень трески"]
+            },
+            {
+                name: "🥬 Овощи",
+                items: ["Картофель", "Морковь", "Лук репчатый", "Лук зеленый", "Чеснок", "Капуста белокочанная", "Капуста краснокочанная", "Брокколи", "Цветная капуста", "Брюссельская капуста", "Помидоры", "Огурцы", "Болгарский перец", "Перец красный жгучий", "Кабачки", "Баклажаны", "Тыква", "Свекла", "Редис", "Шпинат", "Салат", "Руккола", "Сельдерей", "Спаржа"]
+            },
+            {
+                name: "🍎 Фрукты и ягоды",
+                items: ["Яблоки", "Груши", "Бананы", "Апельсины", "Лимоны", "Мандарины", "Киви", "Виноград", "Клубника", "Малина", "Черника", "Вишня", "Персики", "Абрикосы", "Авокадо", "Гранат", "Ананас", "Манго"]
+            },
+            {
+                name: "🍄 Грибы",
+                items: ["Белые грибы", "Лисички", "Грузди", "Рыжики", "Маслята", "Лесные грибы", "Шампиньоны", "Вешенки", "Шиитаке"]
+            },
+            {
+                name: "🌿 Зелень и специи",
+                items: ["Укроп", "Петрушка", "Кинза", "Базилик", "Мята", "Розмарин", "Тимьян", "Орегано", "Зеленый лук", "Черемша", "Руккола", "Шпинат", "Микрозелень", "Перец черный", "Перец красный жгучий", "Перец белый", "Смесь перцев", "Кориандр", "Паприка", "Куркума", "Имбирь"]
+            },
+            {
+                name: "🍚 Крупы и бобовые",
+                items: ["Гречка", "Рис", "Овсянка", "Пшено", "Перловка", "Булгур", "Кускус", "Киноа", "Маш", "Чечевица красная", "Чечевица зеленая", "Нут", "Фасоль", "Горох", "Бобы"]
+            },
+            {
+                name: "🍝 Макаронные изделия",
+                items: ["Спагетти", "Феттучини", "Лапша яичная", "Лапша рисовая", "Вермишель", "Рожки", "Перья", "Ракушки"]
+            },
+            {
+                name: "🥛 Молочные продукты",
+                items: ["Молоко", "Сливки", "Сметана", "Кефир", "Ряженка", "Йогурт", "Йогурт греческий", "Мацони", "Творог", "Сыр твердый", "Сыр плавленый", "Сыр моцарелла", "Сыр фета", "Сыр колбасный", "Сулугуни", "Брынза", "Сыр российский", "Сыр творожный", "Пармезан", "Масло сливочное", "Масло топленое", "Маргарин"]
+            },
+            {
+                name: "🥚 Яйца",
+                items: ["Яйца куриные", "Яйца перепелиные"]
+            },
+            {
+                name: "🍞 Хлеб и выпечка",
+                items: ["Хлеб белый", "Хлеб ржаной", "Батон", "Лаваш", "Багет", "Мука", "Дрожжи", "Разрыхлитель", "Ванилин", "Печенье затяжное", "Печенье сахарное", "Сухари панировочные", "Гренки", "Крекеры"]
+            },
+            {
+                name: "🥫 Консервы и заготовки",
+                items: ["Оливки", "Маслины", "Кукуруза консервированная", "Горошек консервированный", "Фасоль консервированная", "Томатная паста", "Огурцы маринованные", "Помидоры маринованные", "Грибы соленые", "Грибы маринованные", "Лечо", "Аджика"]
+            },
+            {
+                name: "🧴 Масла и соусы",
+                items: ["Масло подсолнечное", "Масло оливковое", "Масло кунжутное", "Соевый соус", "Томатный соус", "Майонез", "Кетчуп", "Горчица", "Хрен", "Уксус", "Бальзамический уксус"]
+            },
+            {
+                name: "🥜 Орехи",
+                items: ["Грецкий орех", "Пекан", "Фундук", "Миндаль", "Бразильский орех", "Кешью", "Макадамия", "Фисташки", "Арахис"]
+            },
+            {
+                name: "🍰 Сладости",
+                items: ["Сахар", "Какао", "Шоколад", "Мед", "Варенье", "Джем", "Конфитюр", "Кокосовая стружка"]
+            }
         ];
 
         let selectedIngredients = new Set();
         let selectedType = "all";
+        let currentCuisine = "all";
 
+        // ============================================
+        // ОТРИСОВКА ВСЕХ ГРУПП ПРОДУКТОВ (СВЕРНУТЫЕ)
+        // ============================================
+        
         function renderIngredients() {
             const container = document.getElementById('ingredientsGroupsContainer');
             if (!container) return;
+            
             container.innerHTML = '';
+            
             ingredientsGroups.forEach(group => {
                 const groupDiv = document.createElement('div');
                 groupDiv.className = 'ingredient-group';
+                
                 const header = document.createElement('div');
                 header.className = 'group-header';
                 header.innerHTML = `<span class="group-title">${group.name}</span><span class="group-toggle">▶</span>`;
+                
                 const itemsDiv = document.createElement('div');
                 itemsDiv.className = 'group-items';
                 itemsDiv.style.display = 'none';
+                
                 group.items.forEach(item => {
                     const btn = document.createElement('button');
                     btn.textContent = item;
                     btn.className = 'ingredient-btn';
-                    btn.onclick = () => {
+                    btn.addEventListener('click', () => {
                         btn.classList.toggle('selected');
-                        if (btn.classList.contains('selected')) selectedIngredients.add(item);
-                        else selectedIngredients.delete(item);
-                    };
+                        if (btn.classList.contains('selected')) {
+                            selectedIngredients.add(item);
+                        } else {
+                            selectedIngredients.delete(item);
+                        }
+                    });
                     itemsDiv.appendChild(btn);
                 });
+                
                 let collapsed = true;
-                header.onclick = () => {
+                header.addEventListener('click', () => {
                     collapsed = !collapsed;
                     itemsDiv.style.display = collapsed ? 'none' : 'flex';
                     header.querySelector('.group-toggle').textContent = collapsed ? '▶' : '▼';
-                };
+                });
+                
                 groupDiv.appendChild(header);
                 groupDiv.appendChild(itemsDiv);
                 container.appendChild(groupDiv);
             });
         }
 
+        // ============================================
+        // ПОИСК РЕЦЕПТОВ (ВРЕМЕННО)
+        // ============================================
+        
         function findRecipes() {
             const resultsDiv = document.getElementById('recipesList');
+            
             if (selectedIngredients.size === 0) {
-                resultsDiv.innerHTML = '<div class="placeholder">⚠️ Выберите продукты</div>';
+                resultsDiv.innerHTML = '<div class="placeholder">⚠️ Выберите продукты, которые есть дома</div>';
                 return;
             }
-            resultsDiv.innerHTML = `<div class="placeholder">🎉 Выбрано продуктов: ${selectedIngredients.size}<br><br>📋 ${Array.from(selectedIngredients).slice(0, 10).join(', ')}<br><br>⏳ Рецепты появятся здесь!</div>`;
+            
+            const ingredientsList = Array.from(selectedIngredients);
+            
+            resultsDiv.innerHTML = `
+                <div class="placeholder">
+                    🎉 <strong>Выбрано продуктов: ${ingredientsList.length}</strong><br><br>
+                    📋 Список: ${ingredientsList.slice(0, 10).join(', ')}${ingredientsList.length > 10 ? '...' : ''}<br><br>
+                    ⏳ <strong>Рецепты появятся здесь!</strong><br>
+                    Скоро добавлю полную базу рецептов.
+                </div>
+            `;
         }
 
+        // ============================================
+        // НАСТРОЙКА ИНТЕРФЕЙСА
+        // ============================================
+        
         function setupEventListeners() {
             document.getElementById('menuToggle')?.addEventListener('click', () => {
                 document.getElementById('mobileNav')?.classList.toggle('open');
             });
+            
             document.querySelectorAll('.theme-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const theme = btn.getAttribute('data-theme');
@@ -165,6 +250,7 @@
                     btn.classList.add('active');
                 });
             });
+            
             document.querySelectorAll('.type-buttons button').forEach(btn => {
                 btn.addEventListener('click', () => {
                     document.querySelectorAll('.type-buttons button').forEach(b => b.classList.remove('active'));
@@ -172,24 +258,63 @@
                     selectedType = btn.getAttribute('data-type');
                 });
             });
+            
             document.getElementById('findRecipesBtn')?.addEventListener('click', findRecipes);
-            const aiModal = document.getElementById('aiModal');
-            document.getElementById('openAiAssistantBtn')?.addEventListener('click', () => { if(aiModal) aiModal.style.display = 'flex'; });
-            document.querySelector('.close-ai')?.addEventListener('click', () => { if(aiModal) aiModal.style.display = 'none'; });
-            document.getElementById('askAiBtn')?.addEventListener('click', () => {
-                const q = document.getElementById('aiQuestion')?.value.trim();
-                const answerDiv = document.getElementById('aiAnswer');
-                if (!q) { if(answerDiv) answerDiv.innerHTML = '❓ Напишите вопрос'; return; }
-                if(answerDiv) answerDiv.innerHTML = '🧑‍🍳 Совет: всегда пробуй блюдо в процессе готовки!';
+            
+            document.querySelectorAll('.nav-category').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    currentCuisine = btn.getAttribute('data-category');
+                    document.getElementById('mobileNav')?.classList.remove('open');
+                    if (selectedIngredients.size > 0) findRecipes();
+                });
             });
+            
+            // ИИ-ассистент
+            const aiModal = document.getElementById('aiModal');
+            const openAiBtn = document.getElementById('openAiAssistantBtn');
+            const closeAi = document.querySelector('.close-ai');
+            const askBtn = document.getElementById('askAiBtn');
+            const aiQuestion = document.getElementById('aiQuestion');
+            const aiAnswer = document.getElementById('aiAnswer');
+            
+            openAiBtn?.addEventListener('click', () => { if(aiModal) aiModal.style.display = 'flex'; });
+            closeAi?.addEventListener('click', () => { if(aiModal) aiModal.style.display = 'none'; });
+            
+            askBtn?.addEventListener('click', () => {
+                const q = aiQuestion?.value.trim();
+                if (!q) {
+                    if(aiAnswer) aiAnswer.innerHTML = '❓ Напишите ваш вопрос о готовке!';
+                    return;
+                }
+                aiAnswer.innerHTML = '🧑‍🍳 ' + getAIAnswer(q);
+            });
+            
             const modal = document.getElementById('recipeModal');
             document.querySelector('.close')?.addEventListener('click', () => { if(modal) modal.style.display = 'none'; });
-            window.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; if (e.target === aiModal) aiModal.style.display = 'none'; };
+            window.onclick = (e) => { 
+                if (e.target === modal) modal.style.display = 'none'; 
+                if (e.target === aiModal) aiModal.style.display = 'none'; 
+            };
         }
+        
+        function getAIAnswer(question) {
+            const q = question.toLowerCase();
+            if (q.includes('заменить яйца')) return 'Яйца можно заменить: банановым пюре (1 яйцо = 1/2 банана), льняной мукой с водой, или тофу.';
+            if (q.includes('заменить сливки')) return 'Сливки заменяют: кокосовое молоко, смесь молока с маслом, или густая сметана с молоком.';
+            if (q.includes('сочное мясо')) return 'Маринуй в кефире/йогурте 2 часа, не пережаривай, дай отдохнуть 5-10 минут после готовки.';
+            if (q.includes('хрустящая корочка')) return 'Обсуши продукты перед жаркой, используй панировку, жарь на хорошо разогретой сковороде.';
+            return `Отличный вопрос! Совет: всегда пробуй блюдо в процессе готовки.`;
+        }
+        
+        // ============================================
+        // ЗАПУСК
+        // ============================================
         
         renderIngredients();
         setupEventListeners();
         document.body.classList.add('theme-green');
+        
+        console.log("✅ Приложение загружено!");
     </script>
 </body>
 </html>
