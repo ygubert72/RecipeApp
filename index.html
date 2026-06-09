@@ -46,6 +46,7 @@
                 <div class="dish-type">
                     <h3>🍽️ Тип блюда</h3>
                     <div class="type-buttons">
+                        <button data-type="all" class="active">🏠 Все</button>
                         <button data-type="salad">🥗 Салат</button>
                         <button data-type="snack">🍢 Закуска</button>
                         <button data-type="soup">🥣 Суп</button>
@@ -85,89 +86,232 @@
         </div>
     </div>
 
-    <script type="module">
-        // Упрощённая версия без модулей - всё в одном файле
-        console.log("Приложение загружено!");
+    <script>
+        // ============================================
+        // ПОЛНАЯ БАЗА ПРОДУКТОВ С ГРУППИРОВКОЙ
+        // ============================================
         
-        // Временные данные
-        const ingredientsList = ["🍅 Помидоры", "🥒 Огурцы", "🧀 Сыр", "🍗 Курица", "🥚 Яйца"];
+        const ingredientsGroups = [
+            {
+                name: "🥩 Мясо и птица",
+                items: ["Говядина", "Свинина", "Баранина", "Кролик", "Курица", "Индейка", "Утка", "Фарш свиной", "Фарш говяжий", "Фарш куриный", "Печень говяжья", "Печень куриная"]
+            },
+            {
+                name: "🐟 Рыба и морепродукты",
+                items: ["Лосось", "Семга", "Тунец", "Скумбрия", "Сельдь", "Треска", "Минтай", "Креветки", "Кальмары", "Мидии", "Рыбные консервы", "Шпроты", "Печень трески"]
+            },
+            {
+                name: "🥬 Овощи",
+                items: ["Картофель", "Морковь", "Лук репчатый", "Лук зеленый", "Чеснок", "Капуста белокочанная", "Капуста краснокочанная", "Брокколи", "Цветная капуста", "Брюссельская капуста", "Помидоры", "Огурцы", "Болгарский перец", "Кабачки", "Баклажаны", "Тыква", "Свекла", "Редис", "Шпинат", "Салат", "Руккола", "Сельдерей", "Спаржа"]
+            },
+            {
+                name: "🍎 Фрукты и ягоды",
+                items: ["Яблоки", "Груши", "Бананы", "Апельсины", "Лимоны", "Мандарины", "Киви", "Виноград", "Клубника", "Малина", "Черника", "Вишня", "Персики", "Абрикосы", "Авокадо", "Гранат", "Ананас", "Манго"]
+            },
+            {
+                name: "🌿 Зелень и специи",
+                items: ["Укроп", "Петрушка", "Кинза", "Базилик", "Мята", "Розмарин", "Тимьян", "Орегано", "Зеленый лук", "Черемша", "Кориандр", "Паприка", "Куркума", "Имбирь"]
+            },
+            {
+                name: "🍚 Крупы и бобовые",
+                items: ["Гречка", "Рис", "Овсянка", "Пшено", "Перловка", "Булгур", "Кускус", "Киноа", "Маш", "Чечевица красная", "Чечевица зеленая", "Нут", "Фасоль", "Горох"]
+            },
+            {
+                name: "🍝 Макароны и тесто",
+                items: ["Спагетти", "Феттучини", "Лапша яичная", "Лапша рисовая", "Лазанья", "Пельмени", "Вареники", "Хинкали", "Тесто слоеное", "Тесто дрожжевое"]
+            },
+            {
+                name: "🥛 Молочные продукты",
+                items: ["Молоко", "Сливки", "Сметана", "Кефир", "Йогурт", "Творог", "Сыр твердый", "Сыр плавленый", "Сыр моцарелла", "Пармезан", "Масло сливочное", "Масло топленое"]
+            },
+            {
+                name: "🥚 Яйца",
+                items: ["Яйца куриные", "Яйца перепелиные"]
+            },
+            {
+                name: "🍞 Хлеб и выпечка",
+                items: ["Хлеб белый", "Хлеб ржаной", "Батон", "Лаваш", "Багет", "Сухари панировочные", "Гренки", "Крекеры"]
+            },
+            {
+                name: "🥫 Консервы и заготовки",
+                items: ["Оливки", "Маслины", "Кукуруза консервированная", "Горошек консервированный", "Фасоль консервированная", "Томатная паста", "Огурцы маринованные", "Помидоры маринованные", "Лечо", "Аджика", "Варенье", "Мед"]
+            },
+            {
+                name: "🫒 Масла и соусы",
+                items: ["Масло подсолнечное", "Масло оливковое", "Масло кунжутное", "Соевый соус", "Томатный соус", "Майонез", "Кетчуп", "Горчица", "Хрен", "Уксус", "Бальзамический уксус"]
+            },
+            {
+                name: "🍰 Сладости",
+                items: ["Сахар", "Мука", "Какао", "Шоколад", "Ванилин", "Разрыхлитель", "Дрожжи", "Орехи грецкие", "Миндаль", "Фундук", "Кокосовая стружка"]
+            }
+        ];
+
         let selectedIngredients = new Set();
+        let selectedType = "all";
+        let currentCuisine = "all";
+
+        // ============================================
+        // ОТРИСОВКА ВСЕХ ГРУПП ПРОДУКТОВ
+        // ============================================
         
-        // Показать ингредиенты
-        const container = document.getElementById('ingredientsGroupsContainer');
-        if (container) {
-            container.innerHTML = '<div class="ingredient-group"><div class="group-header"><span>📦 Основные продукты</span></div><div class="group-items" id="simpleIngredients"></div></div>';
-            const itemsDiv = document.getElementById('simpleIngredients');
-            ingredientsList.forEach(ing => {
-                const btn = document.createElement('button');
-                btn.textContent = ing;
-                btn.className = 'ingredient-btn';
-                btn.onclick = () => {
-                    btn.classList.toggle('selected');
-                    if (btn.classList.contains('selected')) selectedIngredients.add(ing);
-                    else selectedIngredients.delete(ing);
-                };
-                itemsDiv.appendChild(btn);
+        function renderIngredients() {
+            const container = document.getElementById('ingredientsGroupsContainer');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            ingredientsGroups.forEach(group => {
+                const groupDiv = document.createElement('div');
+                groupDiv.className = 'ingredient-group';
+                
+                const header = document.createElement('div');
+                header.className = 'group-header';
+                header.innerHTML = `<span class="group-title">${group.name}</span><span class="group-toggle">▼</span>`;
+                
+                const itemsDiv = document.createElement('div');
+                itemsDiv.className = 'group-items';
+                
+                group.items.forEach(item => {
+                    const btn = document.createElement('button');
+                    btn.textContent = item;
+                    btn.className = 'ingredient-btn';
+                    btn.addEventListener('click', () => {
+                        btn.classList.toggle('selected');
+                        if (btn.classList.contains('selected')) {
+                            selectedIngredients.add(item);
+                        } else {
+                            selectedIngredients.delete(item);
+                        }
+                    });
+                    itemsDiv.appendChild(btn);
+                });
+                
+                let collapsed = false;
+                header.addEventListener('click', () => {
+                    collapsed = !collapsed;
+                    itemsDiv.style.display = collapsed ? 'none' : 'flex';
+                    header.querySelector('.group-toggle').textContent = collapsed ? '▶' : '▼';
+                });
+                
+                groupDiv.appendChild(header);
+                groupDiv.appendChild(itemsDiv);
+                container.appendChild(groupDiv);
             });
         }
+
+        // ============================================
+        // ПОИСК РЕЦЕПТОВ (ВРЕМЕННО - ДЕМО)
+        // ============================================
         
-        // Поиск рецептов
-        document.getElementById('findRecipesBtn')?.addEventListener('click', () => {
-            const listDiv = document.getElementById('recipesList');
+        function findRecipes() {
+            const resultsDiv = document.getElementById('recipesList');
+            
             if (selectedIngredients.size === 0) {
-                listDiv.innerHTML = '<div class="placeholder">⚠️ Выбери продукты!</div>';
+                resultsDiv.innerHTML = '<div class="placeholder">⚠️ Выберите продукты, которые есть дома</div>';
                 return;
             }
-            listDiv.innerHTML = '<div class="placeholder">✅ Рецепты появятся здесь, когда добавим базу рецептов</div>';
-        });
+            
+            const ingredientsList = Array.from(selectedIngredients);
+            
+            resultsDiv.innerHTML = `
+                <div class="placeholder">
+                    🎉 <strong>Выбрано продуктов: ${ingredientsList.length}</strong><br><br>
+                    📋 Список: ${ingredientsList.slice(0, 10).join(', ')}${ingredientsList.length > 10 ? '...' : ''}<br><br>
+                    ⏳ <strong>Рецепты появятся здесь!</strong><br>
+                    Сейчас я собираю для вас базу рецептов (уже 15 штук готово, скоро добавлю все).
+                </div>
+            `;
+        }
+
+        // ============================================
+        // НАСТРОЙКА ИНТЕРФЕЙСА
+        // ============================================
         
-        // Гамбургер-меню
-        document.getElementById('menuToggle')?.addEventListener('click', () => {
-            document.getElementById('mobileNav')?.classList.toggle('open');
-        });
-        
-        // Переключение темы
-        document.querySelectorAll('.theme-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const theme = btn.getAttribute('data-theme');
-                document.body.classList.remove('theme-green', 'theme-orange');
-                document.body.classList.add(`theme-${theme}`);
-                document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
+        function setupEventListeners() {
+            // Гамбургер-меню
+            document.getElementById('menuToggle')?.addEventListener('click', () => {
+                document.getElementById('mobileNav')?.classList.toggle('open');
             });
-        });
-        
-        // Тип блюда
-        document.querySelectorAll('.type-buttons button').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.type-buttons button').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
+            
+            // Переключение темы
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const theme = btn.getAttribute('data-theme');
+                    document.body.classList.remove('theme-green', 'theme-orange');
+                    document.body.classList.add(`theme-${theme}`);
+                    document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                });
             });
-        });
+            
+            // Тип блюда
+            document.querySelectorAll('.type-buttons button').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.type-buttons button').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    selectedType = btn.getAttribute('data-type');
+                });
+            });
+            
+            // Кнопка поиска
+            document.getElementById('findRecipesBtn')?.addEventListener('click', findRecipes);
+            
+            // Навигация по кухням
+            document.querySelectorAll('.nav-category').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    currentCuisine = btn.getAttribute('data-category');
+                    document.getElementById('mobileNav')?.classList.remove('open');
+                    if (selectedIngredients.size > 0) findRecipes();
+                });
+            });
+            
+            // ИИ-ассистент
+            const aiModal = document.getElementById('aiModal');
+            const openAiBtn = document.getElementById('openAiAssistantBtn');
+            const closeAi = document.querySelector('.close-ai');
+            const askBtn = document.getElementById('askAiBtn');
+            const aiQuestion = document.getElementById('aiQuestion');
+            const aiAnswer = document.getElementById('aiAnswer');
+            
+            openAiBtn?.addEventListener('click', () => { if(aiModal) aiModal.style.display = 'flex'; });
+            closeAi?.addEventListener('click', () => { if(aiModal) aiModal.style.display = 'none'; });
+            
+            askBtn?.addEventListener('click', () => {
+                const q = aiQuestion?.value.trim();
+                if (!q) {
+                    if(aiAnswer) aiAnswer.innerHTML = '❓ Напишите ваш вопрос о готовке!';
+                    return;
+                }
+                aiAnswer.innerHTML = '🧑‍🍳 ' + getAIAnswer(q);
+            });
+            
+            // Модалка рецепта
+            const modal = document.getElementById('recipeModal');
+            document.querySelector('.close')?.addEventListener('click', () => { if(modal) modal.style.display = 'none'; });
+            window.onclick = (e) => { 
+                if (e.target === modal) modal.style.display = 'none'; 
+                if (e.target === aiModal) aiModal.style.display = 'none'; 
+            };
+        }
         
-        // ИИ-ассистент
-        const aiModal = document.getElementById('aiModal');
-        const openAiBtn = document.getElementById('openAiAssistantBtn');
-        const closeAi = document.querySelector('.close-ai');
-        const askBtn = document.getElementById('askAiBtn');
-        const aiQuestion = document.getElementById('aiQuestion');
-        const aiAnswer = document.getElementById('aiAnswer');
+        function getAIAnswer(question) {
+            const q = question.toLowerCase();
+            if (q.includes('заменить яйца')) return 'Яйца можно заменить: банановым пюре (1 яйцо = 1/2 банана), льняной мукой с водой, или тофу.';
+            if (q.includes('заменить сливки')) return 'Сливки заменяют: кокосовое молоко, смесь молока с маслом, или густая сметана с молоком.';
+            if (q.includes('сочное мясо')) return 'Маринуй в кефире/йогурте 2 часа, не пережаривай, дай отдохнуть 5-10 минут после готовки.';
+            if (q.includes('хрустящая корочка')) return 'Обсуши продукты перед жаркой, используй панировку, жарь на хорошо разогретой сковороде.';
+            return `Отличный вопрос! Совет: всегда пробуй блюдо в процессе готовки. Для "${question}" рекомендую поискать рецепт в нашей базе, которую мы скоро пополним!`;
+        }
         
-        openAiBtn?.addEventListener('click', () => { if(aiModal) aiModal.style.display = 'flex'; });
-        closeAi?.addEventListener('click', () => { if(aiModal) aiModal.style.display = 'none'; });
-        askBtn?.addEventListener('click', () => {
-            const q = aiQuestion?.value.trim();
-            if (!q) { if(aiAnswer) aiAnswer.innerHTML = '❓ Напиши вопрос!'; return; }
-            if(aiAnswer) aiAnswer.innerHTML = '🧑‍🍳 Совет: всегда пробуй блюдо в процессе готовки! Подробные рецепты добавим позже.';
-        });
+        // ============================================
+        // ЗАПУСК
+        // ============================================
         
-        // Модалка рецепта
-        const modal = document.getElementById('recipeModal');
-        document.querySelector('.close')?.addEventListener('click', () => { if(modal) modal.style.display = 'none'; });
-        window.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; if (e.target === aiModal) aiModal.style.display = 'none'; };
-        
+        renderIngredients();
+        setupEventListeners();
         document.body.classList.add('theme-green');
-        console.log("✅ Приложение работает!");
+        
+        console.log("✅ Приложение загружено! Доступно групп продуктов: " + ingredientsGroups.length);
     </script>
 </body>
 </html>
