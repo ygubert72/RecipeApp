@@ -3,41 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Готовим из того, что есть</title>
+    <title>Шеф-повар — Рецепты из продуктов дома</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..600&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="app-container">
-        <!-- Верхняя панель -->
         <header>
             <button class="menu-toggle" id="menuToggle">☰</button>
-            <h1>🧑‍🍳 Рецепты из дома</h1>
+            <h1>👨‍🍳 Шеф-повар</h1>
             <div class="theme-switch">
                 <button data-theme="green" class="theme-btn active">🍃 Зеленый</button>
                 <button data-theme="orange" class="theme-btn">🍊 Оранжевый</button>
             </div>
         </header>
 
-        <!-- Гамбургер-меню (мобильная навигация) -->
         <nav class="mobile-nav" id="mobileNav">
             <ul>
                 <li><button class="nav-category" data-category="all">🏠 Все рецепты</button></li>
                 <li><button class="nav-category" data-category="russian">🍞 Русская</button></li>
                 <li><button class="nav-category" data-category="eastern">🥘 Восточная</button></li>
                 <li><button class="nav-category" data-category="european">🍷 Европейская</button></li>
-                <li><button id="openAiAssistantBtn" class="ai-assist-btn">🤖 ИИ-ассистент</button></li>
+                <li><hr></li>
+                <li><button class="nav-module" data-module="pp">🥗 ПП-рецепты</button></li>
+                <li><button class="nav-module" data-module="cocktails">🍸 Коктейли</button></li>
+                <li><button class="nav-module" data-module="smoothies">🥤 Смузи</button></li>
+                <li><button id="openAiAssistantBtn" class="ai-assist-btn">🤖 ИИ-шеф</button></li>
             </ul>
         </nav>
 
         <main>
-            <!-- Блок фильтров -->
             <div class="filters-panel">
                 <div class="ingredient-selector">
-                    <h3>📦 Выбери продукты дома</h3>
-                    <div class="ingredients-grid" id="ingredientsGrid">
-                        <!-- динамически из JS -->
-                    </div>
+                    <h3>📦 Что есть дома?</h3>
+                    <div id="ingredientsGroupsContainer"></div>
                 </div>
 
                 <div class="dish-type">
@@ -48,22 +47,21 @@
                         <button data-type="soup">🥣 Суп</button>
                         <button data-type="main">🍛 Второе</button>
                         <button data-type="dessert">🍰 Десерт</button>
+                        <button data-type="drink">🥤 Напиток</button>
                     </div>
                 </div>
 
-                <button id="findRecipesBtn" class="find-btn">✨ Найти, что приготовить</button>
+                <button id="findRecipesBtn" class="find-btn">✨ Найти рецепты</button>
             </div>
 
-            <!-- Результаты: список блюд -->
             <div class="results-area">
                 <h2>🍲 Что можно приготовить</h2>
                 <div id="recipesList" class="recipes-list">
-                    <div class="placeholder">Выбери ингредиенты и нажми "Найти"</div>
+                    <div class="placeholder">Выбери продукты и нажми "Найти"</div>
                 </div>
             </div>
         </main>
 
-        <!-- Модальное окно рецепта -->
         <div id="recipeModal" class="modal">
             <div class="modal-content">
                 <span class="close">&times;</span>
@@ -71,21 +69,32 @@
             </div>
         </div>
 
-        <!-- Модальное окно ИИ-ассистента -->
         <div id="aiModal" class="modal">
             <div class="modal-content ai-modal">
                 <span class="close-ai">&times;</span>
                 <h2>🤖 ИИ-шеф-помощник</h2>
-                <p>Спроси меня о тонкостях приготовления, замене продуктов или технике:</p>
-                <textarea id="aiQuestion" rows="3" placeholder="Например: как сделать, чтобы мясо было сочным?"></textarea>
-                <button id="askAiBtn">Спросить ИИ</button>
+                <p>Спроси о замене продуктов, тонкостях или технике:</p>
+                <textarea id="aiQuestion" rows="3" placeholder="Например: чем заменить сливки в соусе?"></textarea>
+                <button id="askAiBtn">Спросить</button>
                 <div id="aiAnswer" class="ai-answer"></div>
-                <div class="ai-note">💡 Подсказка: я — встроенный ассистент, знаю кулинарные лайфхаки!</div>
             </div>
         </div>
     </div>
 
-    <script src="recipes.js"></script>
-    <script src="script.js"></script>
+    <script type="module">
+        import { ingredientsDB } from './modules/ingredientsDB.js';
+        import { recipesDB } from './modules/recipesDB.js';
+        import { RecipeMatcher } from './modules/recipeMatcher.js';
+        import { UIRenderer } from './modules/uiRenderer.js';
+        import { AIAssistant } from './modules/aiAssistant.js';
+        
+        // Инициализация
+        const matcher = new RecipeMatcher(recipesDB);
+        const ui = new UIRenderer(ingredientsDB, matcher);
+        ui.init();
+        
+        const ai = new AIAssistant();
+        ai.init();
+    </script>
 </body>
 </html>
