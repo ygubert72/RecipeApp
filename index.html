@@ -10,6 +10,165 @@
     
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Дополнительные стили для новой логики поиска */
+        .results-section {
+            margin-bottom: 40px;
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid;
+            flex-wrap: wrap;
+        }
+        
+        .section-header.perfect {
+            border-bottom-color: #2ecc71;
+        }
+        
+        .section-header.missing1 {
+            border-bottom-color: #f39c12;
+        }
+        
+        .section-header.missing2 {
+            border-bottom-color: #3498db;
+        }
+        
+        .section-icon {
+            font-size: 28px;
+        }
+        
+        .section-header h3 {
+            margin: 0;
+            font-size: 1.3rem;
+        }
+        
+        .section-desc {
+            margin-left: auto;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        
+        .recipes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+        }
+        
+        .recipe-card {
+            background: var(--bg-card);
+            border-radius: 24px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 12px var(--shadow);
+            position: relative;
+        }
+        
+        .recipe-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 28px var(--shadow);
+        }
+        
+        .recipe-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        
+        .perfect-badge {
+            background: #2ecc71;
+            color: white;
+        }
+        
+        .missing1-badge {
+            background: #f39c12;
+            color: white;
+        }
+        
+        .missing2-badge {
+            background: #3498db;
+            color: white;
+        }
+        
+        .missing-warning {
+            background: #fef3c7;
+            color: #d97706;
+            padding: 8px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-top: 12px;
+            border-left: 3px solid #f39c12;
+        }
+        
+        body.theme-orange .missing-warning {
+            background: #fff3e0;
+            color: #e67e22;
+        }
+        
+        .recipe-meta {
+            font-size: 12px;
+            opacity: 0.7;
+            margin: 8px 0;
+            display: flex;
+            gap: 12px;
+        }
+        
+        .recipe-img-placeholder {
+            width: 100%;
+            height: 150px;
+            background: linear-gradient(135deg, var(--primary-light), var(--accent-bg));
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+        
+        .recipe-card h4 {
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+            color: var(--primary);
+            padding-right: 40px;
+        }
+        
+        .recipe-card p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+        
+        .recipe-card small {
+            display: block;
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: 8px;
+        }
+        
+        @media (max-width: 768px) {
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .section-desc {
+                margin-left: 0;
+            }
+            .recipes-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="app-container">
@@ -215,7 +374,7 @@
         }
 
         // ============================================
-        // ПОИСК РЕЦЕПТОВ (РАБОТАЕТ С РЕАЛЬНОЙ БАЗОЙ)
+        // РАСШИРЕННЫЙ ПОИСК РЕЦЕПТОВ
         // ============================================
         
         function findRecipes() {
@@ -228,49 +387,156 @@
             
             const userIngredients = Array.from(selectedIngredients);
             
-            // Фильтрация рецептов по выбранным продуктам и типу блюда
-            let matchedRecipes = allRecipes.filter(recipe => {
+            // Результаты разделим на 3 категории
+            let perfectMatches = [];      // 100% попадание (все ингредиенты есть)
+            let missing1Match = [];       // не хватает 1 ингредиента
+            let missing2Match = [];       // не хватает 2 ингредиентов
+            
+            allRecipes.forEach(recipe => {
                 // Фильтр по типу блюда
-                if (selectedType !== "all" && recipe.type !== selectedType) return false;
+                if (selectedType !== "all" && recipe.type !== selectedType) return;
                 
                 // Фильтр по кухне
-                if (currentCuisine !== "all" && recipe.cuisine !== currentCuisine) return false;
+                if (currentCuisine !== "all" && recipe.cuisine !== currentCuisine) return;
                 
-                // Проверка: хотя бы один ингредиент рецепта есть у пользователя
-                const hasMatchingIngredient = recipe.ingredients.some(recipeIng => 
-                    userIngredients.some(userIng => 
+                // Проверяем каждый ингредиент рецепта
+                let missingIngredients = [];
+                let matchedIngredients = [];
+                
+                recipe.ingredients.forEach(recipeIng => {
+                    const found = userIngredients.some(userIng => 
                         userIng.toLowerCase().includes(recipeIng.toLowerCase()) ||
                         recipeIng.toLowerCase().includes(userIng.toLowerCase())
-                    )
-                );
+                    );
+                    
+                    if (found) {
+                        matchedIngredients.push(recipeIng);
+                    } else {
+                        missingIngredients.push(recipeIng);
+                    }
+                });
                 
-                return hasMatchingIngredient;
+                const missingCount = missingIngredients.length;
+                const matchCount = matchedIngredients.length;
+                const totalCount = recipe.ingredients.length;
+                
+                // Сортировка по категориям
+                if (missingCount === 0) {
+                    // 100% попадание
+                    perfectMatches.push({ ...recipe, missingIngredients: [], matchPercent: 100 });
+                } else if (missingCount === 1) {
+                    // Не хватает 1 ингредиента
+                    missing1Match.push({ ...recipe, missingIngredients, matchPercent: Math.round((matchCount / totalCount) * 100) });
+                } else if (missingCount === 2) {
+                    // Не хватает 2 ингредиентов
+                    missing2Match.push({ ...recipe, missingIngredients, matchPercent: Math.round((matchCount / totalCount) * 100) });
+                }
             });
             
-            if (matchedRecipes.length === 0) {
-                resultsDiv.innerHTML = '<div class="placeholder">😕 Нет рецептов с выбранными продуктами. Попробуйте добавить ещё ингредиенты.</div>';
+            // Если нет никаких рецептов
+            if (perfectMatches.length === 0 && missing1Match.length === 0 && missing2Match.length === 0) {
+                resultsDiv.innerHTML = '<div class="placeholder">😕 Нет рецептов с выбранными продуктами. Попробуйте добавить ещё ингредиенты или выберите другую кухню.</div>';
                 return;
             }
             
-            // Отрисовка карточек рецептов
-            resultsDiv.innerHTML = matchedRecipes.map(recipe => `
+            // Собираем HTML для вывода
+            let html = '';
+            
+            // === ПОЛНЫЕ СОВПАДЕНИЯ (100%) ===
+            if (perfectMatches.length > 0) {
+                html += `
+                    <div class="results-section">
+                        <div class="section-header perfect">
+                            <span class="section-icon">✅</span>
+                            <h3>Можно приготовить прямо сейчас! (${perfectMatches.length})</h3>
+                            <span class="section-desc">Все ингредиенты в наличии</span>
+                        </div>
+                        <div class="recipes-grid">
+                            ${perfectMatches.map(recipe => renderRecipeCard(recipe, 'perfect')).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // === НЕ ХВАТАЕТ 1 ИНГРЕДИЕНТА ===
+            if (missing1Match.length > 0) {
+                html += `
+                    <div class="results-section">
+                        <div class="section-header missing1">
+                            <span class="section-icon">🛒</span>
+                            <h3>Докупите 1 продукт! (${missing1Match.length})</h3>
+                            <span class="section-desc">Добавьте недостающий ингредиент — и рецепт станет доступен</span>
+                        </div>
+                        <div class="recipes-grid">
+                            ${missing1Match.map(recipe => renderRecipeCard(recipe, 'missing1')).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // === НЕ ХВАТАЕТ 2 ИНГРЕДИЕНТОВ ===
+            if (missing2Match.length > 0) {
+                html += `
+                    <div class="results-section">
+                        <div class="section-header missing2">
+                            <span class="section-icon">📝</span>
+                            <h3>Докупите 2 продукта (${missing2Match.length})</h3>
+                            <span class="section-desc">Добавьте недостающие ингредиенты — и рецепт станет доступен</span>
+                        </div>
+                        <div class="recipes-grid">
+                            ${missing2Match.map(recipe => renderRecipeCard(recipe, 'missing2')).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            resultsDiv.innerHTML = html;
+            
+            // Добавляем обработчики кликов
+            document.querySelectorAll('.recipe-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    const id = parseInt(card.getAttribute('data-id'));
+                    let recipe = [...perfectMatches, ...missing1Match, ...missing2Match].find(r => r.id === id);
+                    if (recipe) showRecipeModal(recipe);
+                });
+            });
+        }
+        
+        // ============================================
+        // ОТРИСОВКА КАРТОЧКИ РЕЦЕПТА
+        // ============================================
+        
+        function renderRecipeCard(recipe, status) {
+            let statusBadge = '';
+            let missingInfo = '';
+            
+            if (status === 'perfect') {
+                statusBadge = '<span class="recipe-badge perfect-badge">✅ 100% готово</span>';
+            } else if (status === 'missing1') {
+                const missingItem = recipe.missingIngredients[0];
+                statusBadge = '<span class="recipe-badge missing1-badge">🛒 Не хватает 1 продукта</span>';
+                missingInfo = `<div class="missing-warning">⚠️ Нужно докупить: <strong>${missingItem}</strong></div>`;
+            } else if (status === 'missing2') {
+                const missingItems = recipe.missingIngredients.join(', ');
+                statusBadge = '<span class="recipe-badge missing2-badge">📝 Не хватает 2 продуктов</span>';
+                missingInfo = `<div class="missing-warning">⚠️ Нужно докупить: <strong>${missingItems}</strong></div>`;
+            }
+            
+            // Показываем больше ингредиентов в карточке для рекомендаций
+            const ingredientsPreview = recipe.ingredients.slice(0, 3).join(', ');
+            const hasMore = recipe.ingredients.length > 3;
+            
+            return `
                 <div class="recipe-card" data-id="${recipe.id}">
+                    ${statusBadge}
                     <div class="recipe-img-placeholder">🍽️</div>
                     <h4>${recipe.name}</h4>
                     <p>${getCuisineEmoji(recipe.cuisine)} ${getCuisineName(recipe.cuisine)} • ${recipe.type}</p>
                     <div class="recipe-meta">⏱️ ${recipe.cookingTime || 30} мин • 🔥 ${recipe.calories || '?'} ккал</div>
-                    <small>📋 Нужно: ${recipe.ingredients.slice(0, 4).join(', ')}${recipe.ingredients.length > 4 ? '...' : ''}</small>
+                    <small>📋 Ингредиенты: ${ingredientsPreview}${hasMore ? '...' : ''}</small>
+                    ${missingInfo}
                 </div>
-            `).join('');
-            
-            // Добавляем обработчики кликов по карточкам
-            document.querySelectorAll('.recipe-card').forEach(card => {
-                card.addEventListener('click', () => {
-                    const id = parseInt(card.getAttribute('data-id'));
-                    const recipe = matchedRecipes.find(r => r.id === id);
-                    if (recipe) showRecipeModal(recipe);
-                });
-            });
+            `;
         }
         
         function getCuisineEmoji(cuisine) {
@@ -285,9 +551,22 @@
         
         function showRecipeModal(recipe) {
             const modalBody = document.getElementById('modalRecipeBody');
+            
+            // Показываем в модалке список ингредиентов и недостающие, если есть
+            let missingSection = '';
+            if (recipe.missingIngredients && recipe.missingIngredients.length > 0) {
+                missingSection = `
+                    <div class="missing-warning" style="margin-bottom: 20px;">
+                        ⚠️ <strong>Внимание!</strong> Для этого рецепта вам не хватает:<br>
+                        📋 ${recipe.missingIngredients.join(', ')}
+                    </div>
+                `;
+            }
+            
             modalBody.innerHTML = `
                 <h2>${recipe.name}</h2>
                 <div class="recipe-img-placeholder" style="height: 150px; margin-bottom: 15px;">🍽️</div>
+                ${missingSection}
                 <p><strong>🍴 Кухня:</strong> ${getCuisineName(recipe.cuisine)} | <strong>⏱️ Время:</strong> ${recipe.cookingTime || 30} мин | <strong>🔥 Калории:</strong> ${recipe.calories || '?'} ккал</p>
                 <h3>📋 Ингредиенты:</h3>
                 <ul>${recipe.ingredients.map(i => `<li>${i}</li>`).join('')}</ul>
