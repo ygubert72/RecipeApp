@@ -23,7 +23,7 @@
 
         body.theme-green {
             --primary: #2ecc71;
-            --primary-dark: #27ae60;
+            --primary-dark: #229954;
             --primary-light: #d5f5e3;
             --bg-card: #ffffff;
             --text: #1e2e1c;
@@ -35,7 +35,7 @@
 
         body.theme-orange {
             --primary: #e67e22;
-            --primary-dark: #d35400;
+            --primary-dark: #ca6f1e;
             --primary-light: #fdebd0;
             --bg-card: #ffffff;
             --text: #3e2a1f;
@@ -74,7 +74,7 @@
         h1 {
             font-size: 1.8rem;
             font-weight: 700;
-            color: #2ecc71;
+            color: var(--primary-dark);
             display: flex;
             align-items: center;
             gap: 10px;
@@ -89,7 +89,7 @@
             border-radius: 50%;
             font-size: 24px;
             cursor: pointer;
-            color: var(--primary);
+            color: var(--primary-dark);
             transition: all 0.2s;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
@@ -116,6 +116,7 @@
             font-weight: 600;
             font-size: 14px;
             transition: all 0.2s;
+            color: var(--text);
         }
 
         .theme-switch button:active {
@@ -202,7 +203,7 @@
         .filters-panel h3 {
             font-size: 1.4rem;
             margin-bottom: 20px;
-            color: #2ecc71;
+            color: var(--primary-dark);
         }
 
         /* ========== ГРУППЫ ПРОДУКТОВ ========== */
@@ -290,7 +291,6 @@
             background: #d35400;
         }
 
-        /* Убираем треугольник */
         .group-toggle {
             display: none;
         }
@@ -401,7 +401,7 @@
         .results-area h2 {
             font-size: 1.8rem;
             margin-bottom: 24px;
-            color: var(--text);
+            color: var(--primary-dark);
         }
 
         .results-section {
@@ -423,7 +423,7 @@
         .section-header.missing2 { border-bottom-color: #3498db; }
 
         .section-icon { font-size: 28px; }
-        .section-header h3 { margin: 0; font-size: 1.3rem; }
+        .section-header h3 { margin: 0; font-size: 1.3rem; color: var(--text); }
         .section-desc { margin-left: auto; font-size: 0.8rem; color: var(--text-secondary); }
 
         .recipes-grid {
@@ -517,7 +517,7 @@
         .recipe-card h4 {
             font-size: 1.2rem;
             margin-bottom: 8px;
-            color: var(--primary);
+            color: var(--primary-dark);
             padding-right: 40px;
         }
 
@@ -539,6 +539,7 @@
             background: var(--bg-card);
             border-radius: 48px;
             border: 2px dashed var(--border);
+            color: var(--text-secondary);
         }
 
         /* ========== МОДАЛЬНЫЕ ОКНА ========== */
@@ -583,6 +584,7 @@
             background: var(--primary-light);
             transition: all 0.2s;
             box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            color: var(--primary-dark);
         }
 
         .close:active, .close-ai:active {
@@ -601,6 +603,7 @@
             border-radius: 20px;
             font-style: italic;
             margin-top: 16px;
+            border-left: 4px solid var(--primary);
         }
 
         .ai-modal textarea {
@@ -653,7 +656,7 @@
     <div class="app-container">
         <header>
             <button class="menu-toggle" id="menuToggle">☰</button>
-            <h1>👨‍🍳 Шеф-повар</h1>
+            <h1>Шеф-повар</h1>
             <div class="theme-switch">
                 <button data-theme="green" class="theme-btn active">Зеленый</button>
                 <button data-theme="orange" class="theme-btn">Оранжевый</button>
