@@ -1,29 +1,17 @@
 // modules/recipes/index.js
 import { salads } from './salads.js';
-// import { snacks } from './snacks.js';
-// import { soups } from './soups.js';
-// import { mainCourses } from './mainCourses.js';
-// import { desserts } from './desserts.js';
-// import { sauces } from './sauces.js';
+import { snacks } from './snacks.js';
 
 // Объединяем все рецепты в один массив
 export const allRecipes = [
-    ...salads,
-    // ...snacks,
-    // ...soups,
-    // ...mainCourses,
-    // ...desserts,
-    // ...sauces
+    ...salads,    // 50 салатов (id: 101-150)
+    ...snacks     // 50 закусок (id: 201-250)
 ];
 
 // Экспортируем отдельно по категориям
 export const recipesByType = {
     salad: salads,
-    // snack: snacks,
-    // soup: soups,
-    // main: mainCourses,
-    // dessert: desserts,
-    // sauce: sauces
+    snack: snacks
 };
 
 export default allRecipes;
