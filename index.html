@@ -56,7 +56,6 @@
             padding: 20px;
         }
 
-        /* ========== HEADER ========== */
         header {
             display: flex;
             justify-content: space-between;
@@ -131,7 +130,6 @@
             box-shadow: 0 3px 0 var(--primary-dark);
         }
 
-        /* ========== МОБИЛЬНОЕ МЕНЮ ========== */
         .mobile-nav {
             display: none;
             background: var(--bg-card);
@@ -192,7 +190,6 @@
             box-shadow: 0 5px 0 var(--primary-dark);
         }
 
-        /* ========== ПАНЕЛЬ ФИЛЬТРОВ ========== */
         .filters-panel {
             background: var(--bg-card);
             border-radius: 48px;
@@ -208,7 +205,6 @@
             color: var(--primary-dark);
         }
 
-        /* ========== ГРУППЫ ПРОДУКТОВ ========== */
         .ingredient-group {
             margin-bottom: 20px;
             border: 1px solid var(--border);
@@ -250,7 +246,6 @@
             margin-left: auto;
         }
 
-        /* Кнопки "Выбрать всё" и "Убрать всё" — фиксированные цвета (зеленый и красный) */
         .group-select-all, .group-deselect-all {
             font-size: 11px;
             padding: 5px 14px;
@@ -300,7 +295,6 @@
             overflow-y: auto;
         }
 
-        /* ========== КНОПКИ ИНГРЕДИЕНТОВ ========== */
         .ingredient-btn {
             background: var(--primary-light);
             border: none;
@@ -330,7 +324,6 @@
             box-shadow: 0 4px 0 var(--primary-dark);
         }
 
-        /* ========== ТИПЫ БЛЮД ========== */
         .type-buttons {
             display: flex;
             flex-wrap: wrap;
@@ -367,7 +360,6 @@
             box-shadow: 0 5px 0 var(--primary-dark);
         }
 
-        /* ========== КНОПКА ПОИСКА ========== */
         .find-btn {
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
@@ -393,7 +385,6 @@
             box-shadow: 0 4px 0 var(--primary-dark);
         }
 
-        /* ========== РЕЗУЛЬТАТЫ ========== */
         .results-area h2 {
             font-size: 1.8rem;
             margin-bottom: 24px;
@@ -436,7 +427,6 @@
             .recipes-grid { grid-template-columns: 1fr; }
         }
 
-        /* ========== КАРТОЧКИ РЕЦЕПТОВ ========== */
         .recipe-card {
             background: var(--bg-card);
             border-radius: 24px;
@@ -538,7 +528,6 @@
             color: var(--text-secondary);
         }
 
-        /* ========== МОДАЛЬНЫЕ ОКНА ========== */
         .modal {
             display: none;
             position: fixed;
@@ -701,7 +690,7 @@
             <div class="results-area">
                 <h2>Рецепты</h2>
                 <div id="recipesList" class="recipes-list">
-                    <div class="placeholder">Выбери продукты и нажми "Найти рецепты"</div>
+                    <div class="placeholder">Выбери продукты и нажми "Найти"</div>
                 </div>
             </div>
         </main>
@@ -732,8 +721,8 @@
         
         const ingredientsGroups = [
             { name: "Мясо, птица, колбасы", items: ["Говядина", "Свинина", "Баранина", "Кролик", "Курица", "Курица копченая", "Индейка", "Утка", "Фарш свиной", "Фарш говяжий", "Фарш куриный", "Печень говяжья", "Печень куриная", "Колбаса вареная", "Колбаса копченая", "Салями", "Ветчина", "Сосиски", "Сардельки", "Шпикачки", "Сало солёное", "Сало копчёное"] },
-            { name: "Рыба и морепродукты", items: ["Лосось", "Семга", "Тунец", "Скумбрия", "Сельдь", "Треска", "Минтай", "Сёмга слабосолёная", "Сельдь солёная", "Креветки", "Кальмары", "Мидии", "Рыбные консервы", "Тунец конесервированный", "Шпроты", "Печень трески", "Крабовые палочки", "Анчоусы", "Икра красная", "Икра чёрная"] },
-            { name: "Овощи", items: ["Картофель", "Морковь", "Лук репчатый", "Лук красный", "Лук зеленый", "Чеснок", "Капуста белокочанная", "Капуста краснокочанная", "Брокколи", "Цветная капуста", "Брюссельская капуста", "Дайкон", "Помидоры", "Помидоры черри", "Огурцы", "Болгарский перец", "Перец красный жгучий", "Кабачки", "Баклажаны", "Тыква", "Свекла", "Редис", "Шпинат", "Салат Романо", "Салат Айсберг", "Салат Микс", "Руккола", "Сельдерей", "Спаржа", "Фасоль стручковая"] },
+            { name: "Рыба и морепродукты", items: ["Лосось", "Семга", "Тунец", "Скумбрия", "Сельдь", "Треска", "Минтай", "Сёмга слабосолёная", "Сельдь солёная", "Креветки", "Кальмары", "Мидии", "Рыбные консервы", "Тунец консервированный", "Шпроты", "Печень трески", "Крабовые палочки", "Анчоусы", "Икра красная", "Икра чёрная"] },
+            { name: "Овощи", items: ["Картофель", "Морковь", "Лук репчатый", "Лук красный", "Лук зеленый", "Чеснок", "Капуста белокочанная", "Капуста краснокочанная", "Брокколи", "Цветная капуста", "Брюссельская капуста", "Дайкон", "Помидоры", "Помидоры черри", "Огурцы", "Огурцы соленые", "Огурцы маринованные", "Болгарский перец", "Перец красный жгучий", "Кабачки", "Баклажаны", "Тыква", "Свекла", "Редис", "Шпинат", "Салат Романо", "Салат Айсберг", "Салат Микс", "Руккола", "Сельдерей", "Спаржа", "Фасоль стручковая"] },
             { name: "Фрукты и ягоды", items: ["Яблоко", "Груша", "Банан", "Апельсин", "Лимон", "Лайм", "Мандарин", "Киви", "Виноград", "Клубника", "Малина", "Черника", "Вишня", "Персик", "Абрикос", "Авокадо", "Гранат", "Ананас", "Манго", "Чернослив", "Курага", "Изюм", "Сухофрукты"] },
             { name: "Грибы", items: ["Белые грибы", "Лисички", "Грузди", "Рыжики", "Маслята", "Лесные грибы", "Шампиньоны", "Вешенки", "Шиитаке"] },
             { name: "Зелень и специи", items: ["Укроп", "Петрушка", "Кинза", "Базилик", "Мята", "Розмарин", "Тимьян", "Орегано", "Зеленый лук", "Черемша", "Руккола", "Шпинат", "Салат", "Микрозелень", "Перец черный", "Перец красный жгучий", "Перец белый", "Смесь перцев", "Кориандр", "Паприка", "Куркума", "Имбирь"] },
@@ -757,25 +746,53 @@
         console.log(`Загружено рецептов: ${allRecipes.length}`);
 
         // ============================================
-        // НОРМАЛИЗАЦИЯ СЛОВ
+        // УЛУЧШЕННАЯ НОРМАЛИЗАЦИЯ СЛОВ
         // ============================================
         
         function normalizeIngredient(name) {
             let normalized = name.toLowerCase().trim();
-            normalized = normalized.replace(/[\(（][^\)）]*[\)）]/g, '').trim();
-            normalized = normalized.replace(/^[\d\s\/\+\-\(\)]+/, '').trim();
-            normalized = normalized.replace(/^(около|примерно|~)\s*/, '');
-            normalized = normalized.replace(/\s*(г|мл|л|кг|шт|ст\.?\s*ложк[аи]|ч\.?\s*ложк[аи]|стакан[а]?)\b.*$/i, '');
             
+            // Убираем всё, что в скобках
+            normalized = normalized.replace(/[\(（][^\)）]*[\)）]/g, '');
+            
+            // Убираем тире и всё после него (часто идет количество)
+            normalized = normalized.replace(/\s*[-—]\s*.*$/, '');
+            
+            // Убираем количество (цифры, дроби, слова типа "около", "примерно")
+            normalized = normalized.replace(/^[\d\s\/\+\-\(\)]+/, '');
+            normalized = normalized.replace(/^(около|примерно|~)\s*/, '');
+            
+            // Убираем единицы измерения и количество в конце
+            normalized = normalized.replace(/\s*(\d+|\d+\/\d+|\d+\.\d+)\s*$/, '');
+            normalized = normalized.replace(/\s*(г|мл|л|кг|шт|штук|банка|банки|пучок|пучка|зубчик|зубчика|ст\.?\s*ложк[аи]|ч\.?\s*ложк[аи]|стакан[а]?)\b.*$/i, '');
+            
+            // Убираем слова "свежий", "свежие", "соленые", "маринованные" и т.д. для базового сравнения
+            normalized = normalized.replace(/\b(свежий|свежие|свежая|свежее|соленые|соленый|соленая|маринованные|маринованный|вареная|вареный|копченая|копченый|слабосоленая|слабосоленый)\b\s*/gi, '');
+            
+            // Убираем лишние пробелы
+            normalized = normalized.trim();
+            
+            // Правила приведения множественного числа к единственному
             const rules = [
-                { plural: /яйц[ао]$/i, singular: 'яйцо' }, { plural: /яиц$/i, singular: 'яйцо' },
-                { plural: /огурц[ыи]$/i, singular: 'огурец' }, { plural: /помидор[ы]$/i, singular: 'помидор' },
-                { plural: /картофел[и]$/i, singular: 'картофель' }, { plural: /морков[и]$/i, singular: 'морковь' },
-                { plural: /лук[аи]$/i, singular: 'лук' }, { plural: /сосисок$/i, singular: 'сосиска' },
-                { plural: /сосиск[и]$/i, singular: 'сосиска' }, { plural: /яблок[ао]$/i, singular: 'яблоко' },
-                { plural: /груш[и]$/i, singular: 'груша' }, { plural: /банан[овы]?$/i, singular: 'банан' },
-                { plural: /апельсин[аов]?$/i, singular: 'апельсин' }, { plural: /лимоны$/i, singular: 'лимон' },
-                { plural: /сыр[аов]?$/i, singular: 'сыр' }
+                { plural: /яйц[ао]$/i, singular: 'яйцо' },
+                { plural: /яиц$/i, singular: 'яйцо' },
+                { plural: /огурц[ыи]$/i, singular: 'огурец' },
+                { plural: /помидор[ы]$/i, singular: 'помидор' },
+                { plural: /помидор[а]$/i, singular: 'помидор' },
+                { plural: /картофел[и]$/i, singular: 'картофель' },
+                { plural: /картофел[я]$/i, singular: 'картофель' },
+                { plural: /морков[и]$/i, singular: 'морковь' },
+                { plural: /лук[аи]$/i, singular: 'лук' },
+                { plural: /сосисок$/i, singular: 'сосиска' },
+                { plural: /сосиск[и]$/i, singular: 'сосиска' },
+                { plural: /яблок[ао]$/i, singular: 'яблоко' },
+                { plural: /груш[и]$/i, singular: 'груша' },
+                { plural: /банан[овы]?$/i, singular: 'банан' },
+                { plural: /апельсин[аов]?$/i, singular: 'апельсин' },
+                { plural: /лимоны$/i, singular: 'лимон' },
+                { plural: /сыр[аов]?$/i, singular: 'сыр' },
+                { plural: /гриб[аов]?$/i, singular: 'гриб' },
+                { plural: /орех[аов]?$/i, singular: 'орех' }
             ];
             
             for (let rule of rules) {
@@ -784,14 +801,43 @@
                     break;
                 }
             }
+            
+            // Убираем окончания после нормализации
+            normalized = normalized.replace(/[а-я]а$/i, function(match) {
+                if (match.length === 1) return match;
+                return match.slice(0, -1);
+            });
+            
             return normalized;
         }
 
         function isIngredientMatch(userIngredient, recipeIngredient) {
             const userNorm = normalizeIngredient(userIngredient);
             const recipeNorm = normalizeIngredient(recipeIngredient);
+            
             if (userNorm === recipeNorm) return true;
+            
+            // Проверка вхождения (например "сыр" в "сыр твердый", "курица" в "курица копченая")
             if (userNorm.includes(recipeNorm) || recipeNorm.includes(userNorm)) return true;
+            
+            // Специальные случаи
+            const specialPairs = [
+                ['курица', 'курица копченая'],
+                ['курица копченая', 'курица'],
+                ['огурец', 'огурцы'],
+                ['помидор', 'помидоры'],
+                ['яйцо', 'яйца'],
+                ['сыр', 'сыр твердый'],
+                ['сыр твердый', 'сыр']
+            ];
+            
+            for (let pair of specialPairs) {
+                if ((userNorm === pair[0] && recipeNorm === pair[1]) ||
+                    (userNorm === pair[1] && recipeNorm === pair[0])) {
+                    return true;
+                }
+            }
+            
             return false;
         }
 
@@ -901,7 +947,7 @@
             const resultsDiv = document.getElementById('recipesList');
             
             if (selectedIngredients.size === 0) {
-                resultsDiv.innerHTML = '<div class="placeholder">Выберите продукты в холодильнике</div>';
+                resultsDiv.innerHTML = '<div class="placeholder">⚠️ Выберите продукты в холодильнике</div>';
                 return;
             }
             
@@ -939,7 +985,7 @@
             });
             
             if (perfectMatches.length === 0 && missing1Match.length === 0 && missing2Match.length === 0) {
-                resultsDiv.innerHTML = '<div class="placeholder">Нет рецептов с выбранными продуктами.</div>';
+                resultsDiv.innerHTML = '<div class="placeholder">😕 Нет рецептов с выбранными продуктами. Попробуйте добавить ещё ингредиенты.</div>';
                 return;
             }
             
@@ -973,13 +1019,13 @@
             let missingInfo = '';
             
             if (status === 'perfect') {
-                statusBadge = '<span class="recipe-badge perfect-badge">100% готово</span>';
+                statusBadge = '<span class="recipe-badge perfect-badge">✅ 100% готово</span>';
             } else if (status === 'missing1') {
-                statusBadge = '<span class="recipe-badge missing1-badge">Не хватает 1 продукта</span>';
-                missingInfo = `<div class="missing-warning">Нужно докупить: <strong>${recipe.missingIngredients[0]}</strong></div>`;
+                statusBadge = '<span class="recipe-badge missing1-badge">🛒 Не хватает 1 продукта</span>';
+                missingInfo = `<div class="missing-warning">⚠️ Нужно докупить: <strong>${recipe.missingIngredients[0]}</strong></div>`;
             } else if (status === 'missing2') {
-                statusBadge = '<span class="recipe-badge missing2-badge">Не хватает 2 продуктов</span>';
-                missingInfo = `<div class="missing-warning">Нужно докупить: <strong>${recipe.missingIngredients.join(', ')}</strong></div>`;
+                statusBadge = '<span class="recipe-badge missing2-badge">📝 Не хватает 2 продуктов</span>';
+                missingInfo = `<div class="missing-warning">⚠️ Нужно докупить: <strong>${recipe.missingIngredients.join(', ')}</strong></div>`;
             }
             
             const ingredientsPreview = recipe.ingredients.slice(0, 3).join(', ');
@@ -992,7 +1038,7 @@
                     <h4>${recipe.name}</h4>
                     <p>${getCuisineEmoji(recipe.cuisine)} ${getCuisineName(recipe.cuisine)} • ${recipe.type}</p>
                     <div class="recipe-meta">⏱️ ${recipe.cookingTime || 30} мин • 🔥 ${recipe.calories || '?'} ккал</div>
-                    <small>Ингредиенты: ${ingredientsPreview}${hasMore ? '...' : ''}</small>
+                    <small>📋 Ингредиенты: ${ingredientsPreview}${hasMore ? '...' : ''}</small>
                     ${missingInfo}
                 </div>
             `;
@@ -1013,19 +1059,19 @@
             
             let missingSection = '';
             if (recipe.missingIngredients && recipe.missingIngredients.length > 0) {
-                missingSection = `<div class="missing-warning" style="margin-bottom: 20px;">Внимание! Для этого рецепта вам не хватает:<br>${recipe.missingIngredients.join(', ')}</div>`;
+                missingSection = `<div class="missing-warning" style="margin-bottom: 20px;">⚠️ <strong>Внимание!</strong> Для этого рецепта вам не хватает:<br>📋 ${recipe.missingIngredients.join(', ')}</div>`;
             }
             
             modalBody.innerHTML = `
                 <h2>${recipe.name}</h2>
                 <div class="recipe-img-placeholder" style="height: 150px; margin-bottom: 15px;">🍽️</div>
                 ${missingSection}
-                <p><strong>Кухня:</strong> ${getCuisineName(recipe.cuisine)} | <strong>Время:</strong> ${recipe.cookingTime || 30} мин | <strong>Калории:</strong> ${recipe.calories || '?'} ккал</p>
-                <h3>Ингредиенты:</h3>
+                <p><strong>🍴 Кухня:</strong> ${getCuisineName(recipe.cuisine)} | <strong>⏱️ Время:</strong> ${recipe.cookingTime || 30} мин | <strong>🔥 Калории:</strong> ${recipe.calories || '?'} ккал</p>
+                <h3>📋 Ингредиенты:</h3>
                 <ul>${recipe.ingredients.map(i => `<li>${i}</li>`).join('')}</ul>
-                <h3>Пошаговый рецепт:</h3>
+                <h3>👨‍🍳 Пошаговый рецепт:</h3>
                 <div class="steps-list">${recipe.steps.map(s => `<p>${s}</p>`).join('')}</div>
-                <h3>Совет шефа:</h3>
+                <h3>💡 Совет шефа:</h3>
                 <p class="chef-tip">${recipe.tip || 'Подавай с любовью и свежей зеленью!'}</p>
             `;
             document.getElementById('recipeModal').style.display = 'flex';
@@ -1081,7 +1127,7 @@
             askBtn?.addEventListener('click', () => {
                 const q = aiQuestion?.value.trim();
                 if (!q) {
-                    if(aiAnswer) aiAnswer.innerHTML = 'Напишите ваш вопрос о готовке!';
+                    if(aiAnswer) aiAnswer.innerHTML = '❓ Напишите ваш вопрос о готовке!';
                     return;
                 }
                 aiAnswer.innerHTML = '🧑‍🍳 ' + getAIAnswer(q);
@@ -1097,10 +1143,10 @@
         
         function getAIAnswer(question) {
             const q = question.toLowerCase();
-            if (q.includes('заменить яйца')) return 'Яйца можно заменить: банановым пюре, льняной мукой с водой, или тофу.';
-            if (q.includes('заменить сливки')) return 'Сливки заменяют: кокосовое молоко, смесь молока с маслом, или сметана с молоком.';
-            if (q.includes('сочное мясо')) return 'Маринуй в кефире/йогурте 2 часа, не пережаривай, дай отдохнуть 5-10 минут.';
-            if (q.includes('хрустящая корочка')) return 'Обсуши продукты, используй панировку, жарь на хорошо разогретой сковороде.';
+            if (q.includes('заменить яйца')) return 'Яйца можно заменить: банановым пюре (1 яйцо = 1/2 банана), льняной мукой с водой, или тофу.';
+            if (q.includes('заменить сливки')) return 'Сливки заменяют: кокосовое молоко, смесь молока с маслом, или густая сметана с молоком.';
+            if (q.includes('сочное мясо')) return 'Маринуй в кефире/йогурте 2 часа, не пережаривай, дай отдохнуть 5-10 минут после готовки.';
+            if (q.includes('хрустящая корочка')) return 'Обсуши продукты перед жаркой, используй панировку, жарь на хорошо разогретой сковороде.';
             return `Отличный вопрос! Совет: всегда пробуй блюдо в процессе готовки.`;
         }
         
@@ -1112,7 +1158,7 @@
         setupEventListeners();
         document.body.classList.add('theme-green');
         
-        console.log("Приложение загружено!");
+        console.log("✅ Приложение загружено!");
     </script>
 </body>
 </html>
