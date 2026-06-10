@@ -12,7 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..600&display=swap" rel="stylesheet">
     
     <style>
-        /* Дополнительные стили для новой логики поиска */
+        /* Дополнительные стили для новой логики поиска и сетки */
         .results-section {
             margin-bottom: 40px;
         }
@@ -54,10 +54,25 @@
             color: var(--text-secondary);
         }
         
+        /* ОСНОВНАЯ СЕТКА - 3 КОЛОНКИ НА ДЕСКТОПЕ */
         .recipes-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             gap: 24px;
+        }
+        
+        /* 2 колонки на планшетах */
+        @media (max-width: 900px) {
+            .recipes-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        /* 1 колонка на телефонах */
+        @media (max-width: 600px) {
+            .recipes-grid {
+                grid-template-columns: 1fr;
+            }
         }
         
         .recipe-card {
@@ -69,6 +84,9 @@
             border: 1px solid var(--border);
             box-shadow: 0 4px 12px var(--shadow);
             position: relative;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
         }
         
         .recipe-card:hover {
@@ -84,6 +102,7 @@
             padding: 4px 10px;
             border-radius: 20px;
             font-weight: 600;
+            z-index: 1;
         }
         
         .perfect-badge {
@@ -154,9 +173,93 @@
             font-size: 11px;
             color: var(--text-secondary);
             margin-top: 8px;
+            line-height: 1.4;
         }
         
+        /* Стили для модального окна */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 1100;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: var(--bg-card);
+            max-width: 700px;
+            width: 90%;
+            border-radius: 48px;
+            padding: 32px;
+            max-height: 85vh;
+            overflow-y: auto;
+            position: relative;
+            animation: modalFadeIn 0.4s ease;
+            box-shadow: 0 32px 64px rgba(0,0,0,0.2);
+        }
+        
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        .close, .close-ai {
+            position: absolute;
+            right: 24px;
+            top: 24px;
+            font-size: 28px;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: var(--primary-light);
+            transition: all 0.3s;
+            z-index: 10;
+        }
+        
+        .close:hover, .close-ai:hover {
+            background: var(--primary);
+            color: white;
+            transform: rotate(90deg);
+        }
+        
+        .steps-list p {
+            margin: 12px 0;
+            padding-left: 20px;
+            border-left: 3px solid var(--primary);
+            line-height: 1.6;
+        }
+        
+        .chef-tip {
+            background: var(--primary-light);
+            padding: 16px;
+            border-radius: 20px;
+            font-style: italic;
+            margin-top: 16px;
+            border-left: 4px solid var(--primary);
+        }
+        
+        /* Адаптив для модалки */
         @media (max-width: 768px) {
+            .modal-content {
+                padding: 20px;
+                width: 95%;
+            }
             .section-header {
                 flex-direction: column;
                 align-items: flex-start;
@@ -164,9 +267,242 @@
             .section-desc {
                 margin-left: 0;
             }
-            .recipes-grid {
-                grid-template-columns: 1fr;
+        }
+        
+        /* Стили для групп продуктов (из style.css) */
+        .ingredient-group {
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            overflow: hidden;
+            transition: all 0.3s;
+            background: var(--bg-card);
+        }
+        
+        .group-header {
+            background: var(--accent-bg);
+            padding: 16px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .group-header:hover {
+            background: var(--primary-light);
+        }
+        
+        .group-toggle {
+            font-size: 14px;
+            background: var(--primary);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .group-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 16px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .ingredient-btn {
+            background: var(--primary-light);
+            border: none;
+            padding: 10px 18px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text);
+        }
+        
+        .ingredient-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .ingredient-btn.selected {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+        
+        .type-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin: 20px 0;
+        }
+        
+        .type-buttons button {
+            background: var(--primary-light);
+            border: none;
+            padding: 12px 28px;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            font-size: 15px;
+            color: var(--text);
+        }
+        
+        .type-buttons button.active {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+        
+        .find-btn {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            font-size: 18px;
+            font-weight: 700;
+            border-radius: 60px;
+            margin-top: 24px;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s;
+        }
+        
+        .placeholder {
+            text-align: center;
+            padding: 80px 40px;
+            background: var(--bg-card);
+            border-radius: 48px;
+            border: 2px dashed var(--border);
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+        }
+        
+        .mobile-nav {
+            display: none;
+            background: var(--bg-card);
+            border-radius: 28px;
+            margin-bottom: 24px;
+            padding: 20px;
+        }
+        
+        .mobile-nav.open {
+            display: block;
+        }
+        
+        .mobile-nav ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        
+        .mobile-nav button {
+            background: var(--primary-light);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .menu-toggle {
+            display: none;
+            background: var(--primary-light);
+            border: none;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
             }
+            .mobile-nav ul {
+                flex-direction: column;
+            }
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 16px 28px;
+            border-radius: 60px;
+            margin-bottom: 30px;
+        }
+        
+        .theme-switch {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .theme-switch button {
+            background: transparent;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .theme-switch .active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        body.theme-green {
+            --primary: #2ecc71;
+            --primary-dark: #27ae60;
+            --primary-light: #d5f5e3;
+            --bg-card: #ffffff;
+            --text: #1e2e1c;
+            --text-secondary: #5a7a55;
+            --accent-bg: #e8f8f0;
+            --border: #d5f5e3;
+            --shadow: rgba(46, 204, 113, 0.1);
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--accent-bg) 100%);
+        }
+        
+        body.theme-orange {
+            --primary: #e67e22;
+            --primary-dark: #d35400;
+            --primary-light: #fdebd0;
+            --bg-card: #ffffff;
+            --text: #3e2a1f;
+            --text-secondary: #8b5a2b;
+            --accent-bg: #fef5e7;
+            --border: #fdebd0;
+            --shadow: rgba(230, 126, 34, 0.1);
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--accent-bg) 100%);
+        }
+        
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .filters-panel {
+            background: var(--bg-card);
+            border-radius: 48px;
+            padding: 32px;
+            margin-bottom: 40px;
         }
     </style>
 </head>
@@ -274,7 +610,7 @@
             },
             {
                 name: "🌿 Зелень и специи",
-                items: ["Укроп", "Петрушка", "Кинза", "Базилик", "Мята", "Розмарин", "Тимьян", "Орегано", "Зеленый лук", "Черемша", "Руккола", "Шпинат", "Салат", "Микрозелень", "Соль поваренная", "Перец черный", "Перец красный жгучий", "Перец белый", "Смесь перцев", "Кориандр", "Паприка", "Куркума", "Имбирь"]
+                items: ["Укроп", "Петрушка", "Кинза", "Базилик", "Мята", "Розмарин", "Тимьян", "Орегано", "Зеленый лук", "Черемша", "Руккола", "Шпинат", "Салат", "Микрозелень", "Перец черный", "Перец красный жгучий", "Перец белый", "Смесь перцев", "Кориандр", "Паприка", "Куркума", "Имбирь"]
             },
             {
                 name: "🍚 Крупы и бобовые",
@@ -324,7 +660,7 @@
         console.log(`✅ Загружено рецептов: ${allRecipes.length}`);
 
         // ============================================
-        // ОТРИСОВКА ВСЕХ ГРУПП ПРОДУКТОВ (СВЕРНУТЫЕ)
+        // ОТРИСОВКА ВСЕХ ГРУПП ПРОДУКТОВ
         // ============================================
         
         function renderIngredients() {
@@ -387,19 +723,14 @@
             
             const userIngredients = Array.from(selectedIngredients);
             
-            // Результаты разделим на 3 категории
-            let perfectMatches = [];      // 100% попадание (все ингредиенты есть)
-            let missing1Match = [];       // не хватает 1 ингредиента
-            let missing2Match = [];       // не хватает 2 ингредиентов
+            let perfectMatches = [];
+            let missing1Match = [];
+            let missing2Match = [];
             
             allRecipes.forEach(recipe => {
-                // Фильтр по типу блюда
                 if (selectedType !== "all" && recipe.type !== selectedType) return;
-                
-                // Фильтр по кухне
                 if (currentCuisine !== "all" && recipe.cuisine !== currentCuisine) return;
                 
-                // Проверяем каждый ингредиент рецепта
                 let missingIngredients = [];
                 let matchedIngredients = [];
                 
@@ -420,29 +751,22 @@
                 const matchCount = matchedIngredients.length;
                 const totalCount = recipe.ingredients.length;
                 
-                // Сортировка по категориям
                 if (missingCount === 0) {
-                    // 100% попадание
                     perfectMatches.push({ ...recipe, missingIngredients: [], matchPercent: 100 });
                 } else if (missingCount === 1) {
-                    // Не хватает 1 ингредиента
                     missing1Match.push({ ...recipe, missingIngredients, matchPercent: Math.round((matchCount / totalCount) * 100) });
                 } else if (missingCount === 2) {
-                    // Не хватает 2 ингредиентов
                     missing2Match.push({ ...recipe, missingIngredients, matchPercent: Math.round((matchCount / totalCount) * 100) });
                 }
             });
             
-            // Если нет никаких рецептов
             if (perfectMatches.length === 0 && missing1Match.length === 0 && missing2Match.length === 0) {
-                resultsDiv.innerHTML = '<div class="placeholder">😕 Нет рецептов с выбранными продуктами. Попробуйте добавить ещё ингредиенты или выберите другую кухню.</div>';
+                resultsDiv.innerHTML = '<div class="placeholder">😕 Нет рецептов с выбранными продуктами. Попробуйте добавить ещё ингредиенты.</div>';
                 return;
             }
             
-            // Собираем HTML для вывода
             let html = '';
             
-            // === ПОЛНЫЕ СОВПАДЕНИЯ (100%) ===
             if (perfectMatches.length > 0) {
                 html += `
                     <div class="results-section">
@@ -458,14 +782,13 @@
                 `;
             }
             
-            // === НЕ ХВАТАЕТ 1 ИНГРЕДИЕНТА ===
             if (missing1Match.length > 0) {
                 html += `
                     <div class="results-section">
                         <div class="section-header missing1">
                             <span class="section-icon">🛒</span>
                             <h3>Докупите 1 продукт! (${missing1Match.length})</h3>
-                            <span class="section-desc">Добавьте недостающий ингредиент — и рецепт станет доступен</span>
+                            <span class="section-desc">Добавьте недостающий ингредиент</span>
                         </div>
                         <div class="recipes-grid">
                             ${missing1Match.map(recipe => renderRecipeCard(recipe, 'missing1')).join('')}
@@ -474,14 +797,13 @@
                 `;
             }
             
-            // === НЕ ХВАТАЕТ 2 ИНГРЕДИЕНТОВ ===
             if (missing2Match.length > 0) {
                 html += `
                     <div class="results-section">
                         <div class="section-header missing2">
                             <span class="section-icon">📝</span>
                             <h3>Докупите 2 продукта (${missing2Match.length})</h3>
-                            <span class="section-desc">Добавьте недостающие ингредиенты — и рецепт станет доступен</span>
+                            <span class="section-desc">Добавьте недостающие ингредиенты</span>
                         </div>
                         <div class="recipes-grid">
                             ${missing2Match.map(recipe => renderRecipeCard(recipe, 'missing2')).join('')}
@@ -492,7 +814,6 @@
             
             resultsDiv.innerHTML = html;
             
-            // Добавляем обработчики кликов
             document.querySelectorAll('.recipe-card').forEach(card => {
                 card.addEventListener('click', () => {
                     const id = parseInt(card.getAttribute('data-id'));
@@ -501,10 +822,6 @@
                 });
             });
         }
-        
-        // ============================================
-        // ОТРИСОВКА КАРТОЧКИ РЕЦЕПТА
-        // ============================================
         
         function renderRecipeCard(recipe, status) {
             let statusBadge = '';
@@ -522,7 +839,6 @@
                 missingInfo = `<div class="missing-warning">⚠️ Нужно докупить: <strong>${missingItems}</strong></div>`;
             }
             
-            // Показываем больше ингредиентов в карточке для рекомендаций
             const ingredientsPreview = recipe.ingredients.slice(0, 3).join(', ');
             const hasMore = recipe.ingredients.length > 3;
             
@@ -552,7 +868,6 @@
         function showRecipeModal(recipe) {
             const modalBody = document.getElementById('modalRecipeBody');
             
-            // Показываем в модалке список ингредиентов и недостающие, если есть
             let missingSection = '';
             if (recipe.missingIngredients && recipe.missingIngredients.length > 0) {
                 missingSection = `
@@ -615,7 +930,6 @@
                 });
             });
             
-            // ИИ-ассистент
             const aiModal = document.getElementById('aiModal');
             const openAiBtn = document.getElementById('openAiAssistantBtn');
             const closeAi = document.querySelector('.close-ai');
