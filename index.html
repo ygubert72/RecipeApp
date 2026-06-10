@@ -8,15 +8,379 @@
     <!-- Фавикон -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%232ecc71' rx='20'/><text x='50%' y='50%' text-anchor='middle' dy='.35em' font-size='70' fill='white'>👨‍🍳</text></svg>">
     
-    <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..600&display=swap" rel="stylesheet">
     
     <style>
-        /* Дополнительные стили для новой логики поиска и сетки */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background 0.3s, color 0.2s;
+            padding: 0;
+        }
+
+        /* ТЕМА ЗЕЛЕНАЯ (по умолчанию) */
+        body.theme-green {
+            --primary: #2ecc71;
+            --primary-dark: #27ae60;
+            --primary-light: #d5f5e3;
+            --bg-card: #ffffff;
+            --text: #1e2e1c;
+            --text-secondary: #5a7a55;
+            --accent-bg: #e8f8f0;
+            --border: #d5f5e3;
+            --shadow: rgba(46, 204, 113, 0.1);
+        }
+
+        /* ТЕМА ОРАНЖЕВАЯ */
+        body.theme-orange {
+            --primary: #e67e22;
+            --primary-dark: #d35400;
+            --primary-light: #fdebd0;
+            --bg-card: #ffffff;
+            --text: #3e2a1f;
+            --text-secondary: #8b5a2b;
+            --accent-bg: #fef5e7;
+            --border: #fdebd0;
+            --shadow: rgba(230, 126, 34, 0.1);
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--accent-bg) 100%);
+            color: var(--text);
+        }
+
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* ========== HEADER ========== */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 16px 28px;
+            border-radius: 60px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px var(--shadow);
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .menu-toggle {
+            display: none;
+            background: var(--primary-light);
+            border: none;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--primary);
+            transition: all 0.3s;
+        }
+
+        .menu-toggle:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .theme-switch {
+            display: flex;
+            gap: 12px;
+            background: var(--primary-light);
+            padding: 6px;
+            border-radius: 60px;
+        }
+
+        .theme-switch button {
+            background: transparent;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .theme-switch .active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        /* ========== МОБИЛЬНОЕ МЕНЮ ========== */
+        .mobile-nav {
+            display: none;
+            background: var(--bg-card);
+            border-radius: 28px;
+            margin-bottom: 24px;
+            padding: 20px;
+            box-shadow: 0 12px 40px var(--shadow);
+            border: 1px solid var(--border);
+        }
+
+        .mobile-nav.open {
+            display: block;
+            animation: slideDown 0.4s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .mobile-nav ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .mobile-nav hr {
+            margin: 12px 0;
+            border-color: var(--border);
+        }
+
+        .mobile-nav button {
+            background: var(--primary-light);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            color: var(--text);
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .mobile-nav button:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .mobile-nav .ai-assist-btn {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+
+        /* ========== ПАНЕЛЬ ФИЛЬТРОВ ========== */
+        .filters-panel {
+            background: var(--bg-card);
+            border-radius: 48px;
+            padding: 32px;
+            margin-bottom: 40px;
+            box-shadow: 0 20px 40px var(--shadow);
+            border: 1px solid var(--border);
+        }
+
+        .filters-panel h3 {
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Группы продуктов */
+        .ingredient-group {
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            overflow: hidden;
+            background: var(--bg-card);
+        }
+
+        .group-header {
+            background: var(--accent-bg);
+            padding: 16px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .group-header:hover {
+            background: var(--primary-light);
+        }
+
+        .group-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .group-toggle {
+            font-size: 14px;
+            background: var(--primary);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Кнопки управления группой */
+        .group-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .group-select-all, .group-deselect-all {
+            font-size: 11px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .group-select-all {
+            background: var(--primary);
+            color: white;
+        }
+
+        .group-select-all:hover {
+            background: var(--primary-dark);
+            transform: scale(1.02);
+        }
+
+        .group-deselect-all {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .group-deselect-all:hover {
+            background: #c0392b;
+            transform: scale(1.02);
+        }
+
+        body.theme-orange .group-deselect-all {
+            background: #e67e22;
+        }
+
+        body.theme-orange .group-deselect-all:hover {
+            background: #d35400;
+        }
+
+        .group-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 16px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .ingredient-btn {
+            background: var(--primary-light);
+            border: none;
+            padding: 10px 18px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .ingredient-btn:hover {
+            transform: scale(1.05);
+            background: var(--accent-bg);
+        }
+
+        .ingredient-btn.selected {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: 0 6px 16px rgba(46, 204, 113, 0.4);
+        }
+
+        /* Типы блюд */
+        .type-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin: 20px 0;
+        }
+
+        .type-buttons button {
+            background: var(--primary-light);
+            border: none;
+            padding: 12px 28px;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            font-size: 15px;
+            color: var(--text);
+        }
+
+        .type-buttons button.active {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+
+        .find-btn {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            font-size: 18px;
+            font-weight: 700;
+            border-radius: 60px;
+            margin-top: 24px;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        /* Результаты */
+        .results-area h2 {
+            font-size: 1.8rem;
+            margin-bottom: 24px;
+            color: var(--text);
+        }
+
         .results-section {
             margin-bottom: 40px;
         }
-        
+
         .section-header {
             display: flex;
             align-items: center;
@@ -26,55 +390,52 @@
             border-bottom: 2px solid;
             flex-wrap: wrap;
         }
-        
+
         .section-header.perfect {
             border-bottom-color: #2ecc71;
         }
-        
+
         .section-header.missing1 {
             border-bottom-color: #f39c12;
         }
-        
+
         .section-header.missing2 {
             border-bottom-color: #3498db;
         }
-        
+
         .section-icon {
             font-size: 28px;
         }
-        
+
         .section-header h3 {
             margin: 0;
             font-size: 1.3rem;
         }
-        
+
         .section-desc {
             margin-left: auto;
             font-size: 0.8rem;
             color: var(--text-secondary);
         }
-        
-        /* ОСНОВНАЯ СЕТКА - 3 КОЛОНКИ НА ДЕСКТОПЕ */
+
         .recipes-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 24px;
         }
-        
-        /* 2 колонки на планшетах */
+
         @media (max-width: 900px) {
             .recipes-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
         }
-        
-        /* 1 колонка на телефонах */
+
         @media (max-width: 600px) {
             .recipes-grid {
                 grid-template-columns: 1fr;
             }
         }
-        
+
         .recipe-card {
             background: var(--bg-card);
             border-radius: 24px;
@@ -88,12 +449,12 @@
             flex-direction: column;
             height: 100%;
         }
-        
+
         .recipe-card:hover {
             transform: translateY(-4px);
             box-shadow: 0 12px 28px var(--shadow);
         }
-        
+
         .recipe-badge {
             position: absolute;
             top: 12px;
@@ -104,22 +465,22 @@
             font-weight: 600;
             z-index: 1;
         }
-        
+
         .perfect-badge {
             background: #2ecc71;
             color: white;
         }
-        
+
         .missing1-badge {
             background: #f39c12;
             color: white;
         }
-        
+
         .missing2-badge {
             background: #3498db;
             color: white;
         }
-        
+
         .missing-warning {
             background: #fef3c7;
             color: #d97706;
@@ -129,12 +490,12 @@
             margin-top: 12px;
             border-left: 3px solid #f39c12;
         }
-        
+
         body.theme-orange .missing-warning {
             background: #fff3e0;
             color: #e67e22;
         }
-        
+
         .recipe-meta {
             font-size: 12px;
             opacity: 0.7;
@@ -142,7 +503,7 @@
             display: flex;
             gap: 12px;
         }
-        
+
         .recipe-img-placeholder {
             width: 100%;
             height: 150px;
@@ -154,20 +515,20 @@
             font-size: 48px;
             margin-bottom: 16px;
         }
-        
+
         .recipe-card h4 {
             font-size: 1.2rem;
             margin-bottom: 8px;
             color: var(--primary);
             padding-right: 40px;
         }
-        
+
         .recipe-card p {
             font-size: 13px;
             color: var(--text-secondary);
             margin-bottom: 8px;
         }
-        
+
         .recipe-card small {
             display: block;
             font-size: 11px;
@@ -175,8 +536,18 @@
             margin-top: 8px;
             line-height: 1.4;
         }
-        
-        /* Стили для модального окна */
+
+        .placeholder {
+            text-align: center;
+            padding: 80px 40px;
+            background: var(--bg-card);
+            border-radius: 48px;
+            border: 2px dashed var(--border);
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+        }
+
+        /* Модальные окна */
         .modal {
             display: none;
             position: fixed;
@@ -190,7 +561,7 @@
             align-items: center;
             justify-content: center;
         }
-        
+
         .modal-content {
             background: var(--bg-card);
             max-width: 700px;
@@ -201,9 +572,8 @@
             overflow-y: auto;
             position: relative;
             animation: modalFadeIn 0.4s ease;
-            box-shadow: 0 32px 64px rgba(0,0,0,0.2);
         }
-        
+
         @keyframes modalFadeIn {
             from {
                 opacity: 0;
@@ -214,7 +584,7 @@
                 transform: scale(1);
             }
         }
-        
+
         .close, .close-ai {
             position: absolute;
             right: 24px;
@@ -231,20 +601,20 @@
             transition: all 0.3s;
             z-index: 10;
         }
-        
+
         .close:hover, .close-ai:hover {
             background: var(--primary);
             color: white;
             transform: rotate(90deg);
         }
-        
+
         .steps-list p {
             margin: 12px 0;
             padding-left: 20px;
             border-left: 3px solid var(--primary);
             line-height: 1.6;
         }
-        
+
         .chef-tip {
             background: var(--primary-light);
             padding: 16px;
@@ -253,12 +623,58 @@
             margin-top: 16px;
             border-left: 4px solid var(--primary);
         }
-        
-        /* Адаптив для модалки */
+
+        .ai-modal textarea {
+            width: 100%;
+            padding: 16px;
+            border-radius: 28px;
+            border: 1px solid var(--border);
+            margin: 16px 0;
+            font-family: inherit;
+            font-size: 14px;
+            resize: vertical;
+        }
+
+        .ai-modal textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        #askAiBtn {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 60px;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        .ai-answer {
+            background: var(--accent-bg);
+            border-radius: 28px;
+            padding: 20px;
+            margin-top: 20px;
+            border-left: 4px solid var(--primary);
+        }
+
         @media (max-width: 768px) {
-            .modal-content {
+            .app-container {
+                padding: 12px;
+            }
+            .menu-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            header {
+                padding: 12px 20px;
+            }
+            h1 {
+                font-size: 1.3rem;
+            }
+            .filters-panel {
                 padding: 20px;
-                width: 95%;
             }
             .section-header {
                 flex-direction: column;
@@ -267,242 +683,25 @@
             .section-desc {
                 margin-left: 0;
             }
-        }
-        
-        /* Стили для групп продуктов (из style.css) */
-        .ingredient-group {
-            margin-bottom: 20px;
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            overflow: hidden;
-            transition: all 0.3s;
-            background: var(--bg-card);
-        }
-        
-        .group-header {
-            background: var(--accent-bg);
-            padding: 16px 20px;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: 700;
-            font-size: 1rem;
-            transition: all 0.3s;
-        }
-        
-        .group-header:hover {
-            background: var(--primary-light);
-        }
-        
-        .group-toggle {
-            font-size: 14px;
-            background: var(--primary);
-            color: white;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .group-items {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            padding: 16px;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-        
-        .ingredient-btn {
-            background: var(--primary-light);
-            border: none;
-            padding: 10px 18px;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--text);
-        }
-        
-        .ingredient-btn:hover {
-            transform: scale(1.05);
-        }
-        
-        .ingredient-btn.selected {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-        }
-        
-        .type-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 14px;
-            margin: 20px 0;
-        }
-        
-        .type-buttons button {
-            background: var(--primary-light);
-            border: none;
-            padding: 12px 28px;
-            border-radius: 60px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: 600;
-            font-size: 15px;
-            color: var(--text);
-        }
-        
-        .type-buttons button.active {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-        }
-        
-        .find-btn {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            border: none;
-            padding: 16px 32px;
-            font-size: 18px;
-            font-weight: 700;
-            border-radius: 60px;
-            margin-top: 24px;
-            cursor: pointer;
-            width: 100%;
-            transition: all 0.3s;
-        }
-        
-        .placeholder {
-            text-align: center;
-            padding: 80px 40px;
-            background: var(--bg-card);
-            border-radius: 48px;
-            border: 2px dashed var(--border);
-            font-size: 1.1rem;
-            color: var(--text-secondary);
-        }
-        
-        .mobile-nav {
-            display: none;
-            background: var(--bg-card);
-            border-radius: 28px;
-            margin-bottom: 24px;
-            padding: 20px;
-        }
-        
-        .mobile-nav.open {
-            display: block;
-        }
-        
-        .mobile-nav ul {
-            list-style: none;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-        
-        .mobile-nav button {
-            background: var(--primary-light);
-            border: none;
-            padding: 12px 24px;
-            border-radius: 50px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        
-        .menu-toggle {
-            display: none;
-            background: var(--primary-light);
-            border: none;
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            font-size: 24px;
-            cursor: pointer;
-        }
-        
-        @media (max-width: 768px) {
-            .menu-toggle {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-            .mobile-nav ul {
-                flex-direction: column;
+            .modal-content {
+                padding: 20px;
+                width: 95%;
             }
         }
-        
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 16px 28px;
-            border-radius: 60px;
-            margin-bottom: 30px;
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
         }
-        
-        .theme-switch {
-            display: flex;
-            gap: 12px;
+
+        ::-webkit-scrollbar-track {
+            background: var(--primary-light);
+            border-radius: 10px;
         }
-        
-        .theme-switch button {
-            background: transparent;
-            border: none;
-            padding: 8px 20px;
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-        
-        .theme-switch .active {
+
+        ::-webkit-scrollbar-thumb {
             background: var(--primary);
-            color: white;
-        }
-        
-        body.theme-green {
-            --primary: #2ecc71;
-            --primary-dark: #27ae60;
-            --primary-light: #d5f5e3;
-            --bg-card: #ffffff;
-            --text: #1e2e1c;
-            --text-secondary: #5a7a55;
-            --accent-bg: #e8f8f0;
-            --border: #d5f5e3;
-            --shadow: rgba(46, 204, 113, 0.1);
-            background: linear-gradient(135deg, var(--primary-light) 0%, var(--accent-bg) 100%);
-        }
-        
-        body.theme-orange {
-            --primary: #e67e22;
-            --primary-dark: #d35400;
-            --primary-light: #fdebd0;
-            --bg-card: #ffffff;
-            --text: #3e2a1f;
-            --text-secondary: #8b5a2b;
-            --accent-bg: #fef5e7;
-            --border: #fdebd0;
-            --shadow: rgba(230, 126, 34, 0.1);
-            background: linear-gradient(135deg, var(--primary-light) 0%, var(--accent-bg) 100%);
-        }
-        
-        .app-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        .filters-panel {
-            background: var(--bg-card);
-            border-radius: 48px;
-            padding: 32px;
-            margin-bottom: 40px;
+            border-radius: 10px;
         }
     </style>
 </head>
@@ -594,7 +793,7 @@
             },
             {
                 name: "🐟 Рыба и морепродукты",
-                items: ["Лосось", "Семга", "Тунец", "Скумбрия", "Сельдь", "Треска", "Минтай", "Сёмга слабосолёная", "Сельдь солёная", "Креветки", "Кальмары", "Мидии", "Рыбные консервы", "Тунец конесервированный", "Шпроты", "Печень трески", "Крабовые палочки", "Печень трески", "Анчоусы", "Икра красная", "Икра чёрная"]
+                items: ["Лосось", "Семга", "Тунец", "Скумбрия", "Сельдь", "Треска", "Минтай", "Сёмга слабосолёная", "Сельдь солёная", "Креветки", "Кальмары", "Мидии", "Рыбные консервы", "Тунец конесервированный", "Шпроты", "Печень трески", "Крабовые палочки", "Анчоусы", "Икра красная", "Икра чёрная"]
             },
             {
                 name: "🥬 Овощи",
@@ -654,6 +853,9 @@
         let selectedType = "all";
         let currentCuisine = "all";
         
+        // Хранилище для кнопок каждой группы (для управления выделением)
+        let groupButtonsMap = new Map();
+        
         // Импорт рецептов из модульной системы
         import { allRecipes } from './modules/recipes/index.js';
         
@@ -668,18 +870,49 @@
             if (!container) return;
             
             container.innerHTML = '';
+            groupButtonsMap.clear();
             
             ingredientsGroups.forEach(group => {
                 const groupDiv = document.createElement('div');
                 groupDiv.className = 'ingredient-group';
+                groupDiv.dataset.groupName = group.name;
                 
                 const header = document.createElement('div');
                 header.className = 'group-header';
-                header.innerHTML = `<span class="group-title">${group.name}</span><span class="group-toggle">▶</span>`;
+                
+                const titleSpan = document.createElement('span');
+                titleSpan.className = 'group-title';
+                titleSpan.innerHTML = `<span class="group-name">${group.name}</span>`;
+                
+                const actionsDiv = document.createElement('div');
+                actionsDiv.className = 'group-actions';
+                
+                const selectAllBtn = document.createElement('button');
+                selectAllBtn.textContent = '✅ Выбрать всё';
+                selectAllBtn.className = 'group-select-all';
+                selectAllBtn.title = `Выбрать все продукты из раздела "${group.name}"`;
+                
+                const deselectAllBtn = document.createElement('button');
+                deselectAllBtn.textContent = '❌ Убрать всё';
+                deselectAllBtn.className = 'group-deselect-all';
+                deselectAllBtn.title = `Убрать выделение со всех продуктов раздела "${group.name}"`;
+                
+                actionsDiv.appendChild(selectAllBtn);
+                actionsDiv.appendChild(deselectAllBtn);
+                
+                const toggleSpan = document.createElement('span');
+                toggleSpan.className = 'group-toggle';
+                toggleSpan.textContent = '▶';
+                
+                header.appendChild(titleSpan);
+                header.appendChild(actionsDiv);
+                header.appendChild(toggleSpan);
                 
                 const itemsDiv = document.createElement('div');
                 itemsDiv.className = 'group-items';
                 itemsDiv.style.display = 'none';
+                
+                const groupButtons = [];
                 
                 group.items.forEach(item => {
                     const btn = document.createElement('button');
@@ -694,13 +927,48 @@
                         }
                     });
                     itemsDiv.appendChild(btn);
+                    groupButtons.push(btn);
+                });
+                
+                // Сохраняем кнопки группы для управления
+                groupButtonsMap.set(group.name, {
+                    buttons: groupButtons,
+                    selectAllBtn,
+                    deselectAllBtn
+                });
+                
+                // Обработчик "Выбрать всё"
+                selectAllBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    groupButtons.forEach(btn => {
+                        if (!btn.classList.contains('selected')) {
+                            btn.classList.add('selected');
+                            selectedIngredients.add(btn.textContent);
+                        }
+                    });
+                });
+                
+                // Обработчик "Убрать всё"
+                deselectAllBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    groupButtons.forEach(btn => {
+                        if (btn.classList.contains('selected')) {
+                            btn.classList.remove('selected');
+                            selectedIngredients.delete(btn.textContent);
+                        }
+                    });
                 });
                 
                 let collapsed = true;
-                header.addEventListener('click', () => {
+                header.addEventListener('click', (e) => {
+                    // Не сворачиваем, если кликнули по кнопкам
+                    if (e.target === selectAllBtn || e.target === deselectAllBtn ||
+                        selectAllBtn.contains(e.target) || deselectAllBtn.contains(e.target)) {
+                        return;
+                    }
                     collapsed = !collapsed;
                     itemsDiv.style.display = collapsed ? 'none' : 'flex';
-                    header.querySelector('.group-toggle').textContent = collapsed ? '▶' : '▼';
+                    toggleSpan.textContent = collapsed ? '▶' : '▼';
                 });
                 
                 groupDiv.appendChild(header);
