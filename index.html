@@ -1,439 +1,61 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Шеф-повар — рецепты из продуктов дома</title>
+/* Глобальные кнопки выбора всех продуктов */
+.ingredient-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.ingredient-header h3 {
+    margin-bottom: 0;
+}
+
+.global-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.global-select-all, .global-deselect-all {
+    padding: 8px 20px;
+    border-radius: 40px;
+    border: none;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.1s;
+    box-shadow: 0 3px 0 rgba(0,0,0,0.1);
+}
+
+.global-select-all:active, .global-deselect-all:active {
+    transform: translateY(2px);
+    box-shadow: 0 1px 0 rgba(0,0,0,0.1);
+}
+
+.global-select-all {
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+    color: white;
+}
+
+.global-deselect-all {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: white;
+}
+
+/* Адаптив для мобильных */
+@media (max-width: 768px) {
+    .ingredient-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
     
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%232ecc71' rx='20'/><text x='50%' y='50%' text-anchor='middle' dy='.35em' font-size='70' fill='white'>👨‍🍳</text></svg>">
+    .global-actions {
+        justify-content: center;
+    }
     
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <div class="app-container">
-        <header>
-            <button class="menu-toggle" id="menuToggle">☰</button>
-            <h1>👨‍🍳 Шеф-повар</h1>
-            <div class="theme-switch">
-                <button data-theme="green" class="theme-btn active">Зеленый</button>
-                <button data-theme="orange" class="theme-btn">Оранжевый</button>
-            </div>
-        </header>
-
-        <nav class="mobile-nav" id="mobileNav">
-            <ul>
-                <li><button class="nav-category" data-category="all">Все рецепты</button></li>
-                <li><button class="nav-category" data-category="russian">Русская</button></li>
-                <li><button class="nav-category" data-category="eastern">Восточная</button></li>
-                <li><button class="nav-category" data-category="european">Европейская</button></li>
-                <li><hr></li>
-                <li><button class="nav-module" data-module="pp">ПП-рецепты</button></li>
-                <li><button class="nav-module" data-module="cocktails">Коктейли</button></li>
-                <li><button class="nav-module" data-module="smoothies">Смузи</button></li>
-                <li><button id="openAiAssistantBtn" class="ai-assist-btn">🤖 ИИ-шеф</button></li>
-            </ul>
-        </nav>
-
-        <main>
-            <div class="filters-panel">
-                <div class="ingredient-selector">
-                    <h3>🧊 Продукты в холодильнике</h3>
-                    <div id="ingredientsGroupsContainer"></div>
-                </div>
-
-                <div class="dish-type">
-                    <h3>🍽️ Тип блюда</h3>
-                    <div class="type-buttons">
-                        <button data-type="all" class="active">Все</button>
-                        <button data-type="salad">Салат</button>
-                        <button data-type="snack">Закуска</button>
-                        <button data-type="soup">Суп</button>
-                        <button data-type="main">Второе</button>
-                        <button data-type="sauce">Соус</button>
-                        <button data-type="dessert">Десерт</button>
-                        <button data-type="drink">Напиток</button>
-                    </div>
-                </div>
-
-                <button id="findRecipesBtn" class="find-btn">✨ Найти рецепты</button>
-            </div>
-
-            <div class="results-area">
-                <h2>🍳 Рецепты</h2>
-                <div id="recipesList" class="recipes-list">
-                    <div class="placeholder">✨ Выбери продукты и нажми "Найти рецепты"</div>
-                </div>
-            </div>
-        </main>
-
-        <div id="recipeModal" class="modal">
-            <div class="modal-content">
-                <span class="close">&times;</span>
-                <div id="modalRecipeBody"></div>
-            </div>
-        </div>
-
-        <div id="aiModal" class="modal">
-            <div class="modal-content ai-modal">
-                <span class="close-ai">&times;</span>
-                <h2>🤖 ИИ-шеф-помощник</h2>
-                <p>Спроси о замене продуктов, тонкостях приготовления или технике:</p>
-                <textarea id="aiQuestion" rows="3" placeholder="Например: чем заменить сливки в соусе?"></textarea>
-                <button id="askAiBtn">Спросить</button>
-                <div id="aiAnswer" class="ai-answer"></div>
-            </div>
-        </div>
-    </div>
-
-    <script type="module">
-        import { allRecipes } from './modules/recipes/index.js';
-        import IngredientMatcher from './modules/ingredientMatcher.js';
-        import AIHelper from './modules/aiHelper.js';
-
-        // ============================================
-        // БАЗА ПРОДУКТОВ
-        // ============================================
-        
-        const ingredientsGroups = [
-            { name: "🥩 Мясо, птица, колбасы", items: ["Говядина", "Свинина", "Баранина", "Кролик", "Курица", "Курица копченая", "Индейка", "Гусь", "Утка", "Перепел", "Фарш свиной", "Фарш говяжий", "Фарш куриный", "Печень говяжья", "Печень куриная", "Бекон", "Колбаса вареная", "Колбаса копченая", "Салями", "Ветчина", "Сосиски", "Сардельки", "Шпикачки", "Сало солёное", "Сало копчёное"] },
-            { name: "🐟 Рыба и морепродукты", items: ["Лосось", "Осётр", "Семга", "Тунец", "Скумбрия", "Сельдь", "Треска", "Минтай", "Щука", "Судак", "Карп", "Сом", "Окунь", "Карась", "Сёмга слабосолёная", "Сельдь солёная", "Креветки", "Кальмары", "Мидии", "Раки", "Лангусты", "Омары", "Рыбные консервы", "Тунец консервированный", "Шпроты", "Печень трески", "Крабовые палочки", "Анчоусы", "Икра красная", "Икра чёрная", "Морская капуста"] },
-            { name: "🥬 Овощи", items: ["Картофель", "Морковь", "Лук репчатый", "Лук красный", "Лук зеленый", "Чеснок", "Капуста белокочанная", "Капуста краснокочанная", "Брокколи", "Цветная капуста", "Брюссельская капуста", "Дайкон", "Помидоры", "Помидоры черри", "Огурцы", "Огурцы соленые", "Огурцы маринованные", "Болгарский перец", "Перец красный жгучий", "Кабачки", "Баклажаны", "Тыква", "Свекла", "Редис", "Шпинат", "Салат", "Салат Романо", "Салат Айсберг", "Салат Микс", "Руккола", "Сельдерей", "Спаржа", "Фасоль стручковая"] },
-            { name: "🍎 Фрукты и ягоды", items: ["Яблоко", "Груша", "Банан", "Апельсин", "Лимон", "Лайм", "Мандарин", "Киви", "Виноград", "Клубника", "Малина", "Черника", "Вишня", "Персик", "Абрикос", "Авокадо", "Гранат", "Ананас", "Манго", "Чернослив", "Курага", "Изюм", "Сухофрукты"] },
-            { name: "🍄 Грибы", items: ["Белые грибы", "Лисички", "Грузди", "Рыжики", "Маслята", "Лесные грибы", "Шампиньоны", "Вешенки", "Шиитаке"] },
-            { name: "🌿 Зелень и специи", items: ["Укроп", "Петрушка", "Кинза", "Базилик", "Мята", "Розмарин", "Тимьян", "Орегано", "Зеленый лук", "Черемша", "Руккола", "Шпинат", "Салат", "Микрозелень", "Соль поваренная", "Соль морская", "Перец черный", "Перец красный жгучий", "Перец белый", "Смесь перцев", "Кориандр", "Паприка", "Куркума", "Имбирь"] },
-            { name: "🍚 Крупы и бобовые", items: ["Гречка", "Рис круглозерный", "Рис длиннозёрный", "Овсянка", "Геркулес", "Пшено", "Перловка", "Булгур", "Кускус", "Киноа", "Маш", "Чечевица красная", "Чечевица зеленая", "Нут", "Фасоль", "Горох", "Бобы"] },
-            { name: "🍝 Макаронные изделия", items: ["Спагетти", "Феттучини", "Лапша яичная", "Лапша рисовая", "Вермишель", "Рожки", "Перья", "Ракушки"] },
-            { name: "🥛 Молочные продукты", items: ["Молоко", "Сгущённое молоко", "Сливки", "Сгущённые сливки", "Сметана", "Кефир", "Ряженка", "Йогурт", "Йогурт греческий", "Мацони", "Творог", "Сыр твердый", "Сыр плавленый", "Сыр моцарелла", "Сыр фета", "Сыр колбасный", "Сулугуни", "Брынза", "Сыр российский", "Сыр творожный", "Сыр сливочный", "Пармезан", "Дор блю", "Масло сливочное", "Масло топленое", "Маргарин"] },
-            { name: "🥚 Яйца", items: ["Яйца куриные", "Яйца перепелиные"] },
-            { name: "🍞 Хлеб и выпечка", items: ["Хлеб белый", "Хлеб ржаной", "Батон", "Лаваш", "Тарталетки", "Профитроли", "Багет", "Мука", "Дрожжи", "Разрыхлитель", "Ванилин", "Печенье затяжное", "Печенье сахарное", "Сухари панировочные", "Гренки", "Крекеры"] },
-            { name: "🥫 Консервы и заготовки", items: ["Капуста квашеная", "Оливки", "Маслины", "Кукуруза консервированная", "Горошек консервированный", "Фасоль консервированная", "Каперсы", "Томатная паста", "Огурцы маринованные", "Корнишоны", "Помидоры маринованные", "Грибы соленые", "Грибы маринованные", "Тунец консервированный", "Шпроты", "Сайра", "Лечо", "Аджика", "Икра кабачковая", "Икра баклажанная"] },
-            { name: "🧴 Масла и соусы", items: ["Масло подсолнечное", "Масло растительное", "Масло оливковое", "Масло кунжутное", "Соевый соус", "Томатный соус", "Майонез", "Кетчуп", "Горчица", "Горчица дижонская", "Хрен", "Уксус", "Бальзамический уксус", "Вустерширский соус"] },
-            { name: "🥜 Орехи и семена", items: ["Грецкий орех", "Пекан", "Фундук", "Миндаль", "Бразильский орех", "Кешью", "Макадамия", "Фисташки", "Арахис", "Кунжут", "Семена Чиа", "Семена подсолнуха", "Семечки тыквенные"] },
-            { name: "🍰 Сладости", items: ["Сахар", "Какао", "Шоколад", "Мед", "Варенье", "Джем", "Конфитюр", "Кокосовая стружка"] }
-        ];
-
-        // ============================================
-        // ИНИЦИАЛИЗАЦИЯ
-        // ============================================
-        
-        const ingredientMatcher = new IngredientMatcher();
-        const aiHelper = new AIHelper();
-        
-        let selectedIngredients = new Set();
-        let selectedType = "all";
-        let currentCuisine = "all";
-        let groupButtonsMap = new Map();
-
-        // ============================================
-        // ОТРИСОВКА ГРУПП ПРОДУКТОВ
-        // ============================================
-        
-        function renderIngredients() {
-            const container = document.getElementById('ingredientsGroupsContainer');
-            if (!container) return;
-            container.innerHTML = '';
-            groupButtonsMap.clear();
-            
-            ingredientsGroups.forEach(group => {
-                const groupDiv = document.createElement('div');
-                groupDiv.className = 'ingredient-group';
-                
-                const header = document.createElement('div');
-                header.className = 'group-header';
-                
-                const titleSpan = document.createElement('span');
-                titleSpan.className = 'group-title';
-                titleSpan.textContent = group.name;
-                
-                const actionsDiv = document.createElement('div');
-                actionsDiv.className = 'group-actions';
-                
-                const selectAllBtn = document.createElement('button');
-                selectAllBtn.textContent = 'Выбрать всё';
-                selectAllBtn.className = 'group-select-all';
-                
-                const deselectAllBtn = document.createElement('button');
-                deselectAllBtn.textContent = 'Убрать всё';
-                deselectAllBtn.className = 'group-deselect-all';
-                
-                actionsDiv.appendChild(selectAllBtn);
-                actionsDiv.appendChild(deselectAllBtn);
-                
-                header.appendChild(titleSpan);
-                header.appendChild(actionsDiv);
-                
-                const itemsDiv = document.createElement('div');
-                itemsDiv.className = 'group-items';
-                itemsDiv.style.display = 'none';
-                
-                const groupButtons = [];
-                
-                group.items.forEach(item => {
-                    const btn = document.createElement('button');
-                    btn.textContent = item;
-                    btn.className = 'ingredient-btn';
-                    btn.addEventListener('click', () => {
-                        btn.classList.toggle('selected');
-                        if (btn.classList.contains('selected')) {
-                            selectedIngredients.add(item);
-                        } else {
-                            selectedIngredients.delete(item);
-                        }
-                    });
-                    itemsDiv.appendChild(btn);
-                    groupButtons.push(btn);
-                });
-                
-                groupButtonsMap.set(group.name, { buttons: groupButtons, selectAllBtn, deselectAllBtn });
-                
-                selectAllBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    groupButtons.forEach(btn => {
-                        if (!btn.classList.contains('selected')) {
-                            btn.classList.add('selected');
-                            selectedIngredients.add(btn.textContent);
-                        }
-                    });
-                });
-                
-                deselectAllBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    groupButtons.forEach(btn => {
-                        if (btn.classList.contains('selected')) {
-                            btn.classList.remove('selected');
-                            selectedIngredients.delete(btn.textContent);
-                        }
-                    });
-                });
-                
-                let collapsed = true;
-                header.addEventListener('click', (e) => {
-                    if (e.target === selectAllBtn || e.target === deselectAllBtn ||
-                        selectAllBtn.contains(e.target) || deselectAllBtn.contains(e.target)) {
-                        return;
-                    }
-                    collapsed = !collapsed;
-                    itemsDiv.style.display = collapsed ? 'none' : 'flex';
-                });
-                
-                groupDiv.appendChild(header);
-                groupDiv.appendChild(itemsDiv);
-                container.appendChild(groupDiv);
-            });
-        }
-
-        // ============================================
-        // ПОИСК РЕЦЕПТОВ (с использованием IngredientMatcher)
-        // ============================================
-        
-        function findRecipes() {
-            const resultsDiv = document.getElementById('recipesList');
-            
-            if (selectedIngredients.size === 0) {
-                resultsDiv.innerHTML = '<div class="placeholder">⚠️ Выберите продукты в холодильнике</div>';
-                return;
-            }
-            
-            const userIngredients = Array.from(selectedIngredients);
-            
-            let perfectMatches = [];
-            let missing1Match = [];
-            let missing2Match = [];
-            
-            allRecipes.forEach(recipe => {
-                // Фильтр по типу блюда
-                if (selectedType !== "all" && recipe.type !== selectedType) return;
-                // Фильтр по кухне
-                if (currentCuisine !== "all" && recipe.cuisine !== currentCuisine) return;
-                
-                const { missing, missingCount } = ingredientMatcher.findMissingIngredients(recipe, userIngredients);
-                
-                if (missingCount === 0) {
-                    perfectMatches.push({ ...recipe, missingIngredients: [] });
-                } else if (missingCount === 1) {
-                    missing1Match.push({ ...recipe, missingIngredients: missing });
-                } else if (missingCount === 2) {
-                    missing2Match.push({ ...recipe, missingIngredients: missing });
-                }
-            });
-            
-            if (perfectMatches.length === 0 && missing1Match.length === 0 && missing2Match.length === 0) {
-                resultsDiv.innerHTML = '<div class="placeholder">😕 Нет рецептов с выбранными продуктами. Попробуйте добавить ещё ингредиенты.</div>';
-                return;
-            }
-            
-            let html = '';
-            
-            if (perfectMatches.length > 0) {
-                html += `<div class="results-section"><div class="section-header perfect"><span class="section-icon">✅</span><h3>Можно приготовить прямо сейчас! (${perfectMatches.length})</h3></div><div class="recipes-grid">${perfectMatches.map(recipe => renderRecipeCard(recipe, 'perfect')).join('')}</div></div>`;
-            }
-            
-            if (missing1Match.length > 0) {
-                html += `<div class="results-section"><div class="section-header missing1"><span class="section-icon">🛒</span><h3>Докупите 1 продукт! (${missing1Match.length})</h3></div><div class="recipes-grid">${missing1Match.map(recipe => renderRecipeCard(recipe, 'missing1')).join('')}</div></div>`;
-            }
-            
-            if (missing2Match.length > 0) {
-                html += `<div class="results-section"><div class="section-header missing2"><span class="section-icon">📝</span><h3>Докупите 2 продукта (${missing2Match.length})</h3></div><div class="recipes-grid">${missing2Match.map(recipe => renderRecipeCard(recipe, 'missing2')).join('')}</div></div>`;
-            }
-            
-            resultsDiv.innerHTML = html;
-            
-            document.querySelectorAll('.recipe-card').forEach(card => {
-                card.addEventListener('click', () => {
-                    const id = parseInt(card.getAttribute('data-id'));
-                    let recipe = [...perfectMatches, ...missing1Match, ...missing2Match].find(r => r.id === id);
-                    if (recipe) showRecipeModal(recipe);
-                });
-            });
-        }
-        
-        function renderRecipeCard(recipe, status) {
-            let statusBadge = '';
-            let missingInfo = '';
-            
-            if (status === 'perfect') {
-                statusBadge = '<span class="recipe-badge perfect-badge">✅ 100% готово</span>';
-            } else if (status === 'missing1') {
-                statusBadge = '<span class="recipe-badge missing1-badge">🛒 Не хватает 1 продукта</span>';
-                missingInfo = `<div class="missing-warning">⚠️ Нужно докупить: <strong>${recipe.missingIngredients[0]}</strong></div>`;
-            } else if (status === 'missing2') {
-                statusBadge = '<span class="recipe-badge missing2-badge">📝 Не хватает 2 продуктов</span>';
-                missingInfo = `<div class="missing-warning">⚠️ Нужно докупить: <strong>${recipe.missingIngredients.join(', ')}</strong></div>`;
-            }
-            
-            const ingredientsPreview = recipe.ingredients.slice(0, 3).join(', ');
-            const hasMore = recipe.ingredients.length > 3;
-            
-            return `
-                <div class="recipe-card" data-id="${recipe.id}">
-                    ${statusBadge}
-                    <div class="recipe-img-placeholder">🍽️</div>
-                    <h4>${recipe.name}</h4>
-                    <p>${getCuisineEmoji(recipe.cuisine)} ${getCuisineName(recipe.cuisine)} • ${recipe.type === 'salad' ? 'Салат' : recipe.type === 'snack' ? 'Закуска' : recipe.type}</p>
-                    <div class="recipe-meta">⏱️ ${recipe.cookingTime || 30} мин • 🔥 ${recipe.calories || '?'} ккал</div>
-                    <small>📋 Ингредиенты: ${ingredientsPreview}${hasMore ? '...' : ''}</small>
-                    ${missingInfo}
-                </div>
-            `;
-        }
-        
-        function getCuisineEmoji(cuisine) {
-            const map = { russian: '🍞', eastern: '🥘', european: '🍷' };
-            return map[cuisine] || '🍽️';
-        }
-        
-        function getCuisineName(cuisine) {
-            const map = { russian: 'Русская', eastern: 'Восточная', european: 'Европейская' };
-            return map[cuisine] || cuisine;
-        }
-        
-        function showRecipeModal(recipe) {
-            const modalBody = document.getElementById('modalRecipeBody');
-            
-            let missingSection = '';
-            if (recipe.missingIngredients && recipe.missingIngredients.length > 0) {
-                missingSection = `<div class="missing-warning" style="margin-bottom: 20px;">⚠️ <strong>Внимание!</strong> Для этого рецепта вам не хватает:<br>📋 ${recipe.missingIngredients.join(', ')}</div>`;
-            }
-            
-            modalBody.innerHTML = `
-                <h2>${recipe.name}</h2>
-                <div class="recipe-img-placeholder" style="height: 150px; margin-bottom: 15px;">🍽️</div>
-                ${missingSection}
-                <p><strong>🍴 Кухня:</strong> ${getCuisineName(recipe.cuisine)} | <strong>⏱️ Время:</strong> ${recipe.cookingTime || 30} мин | <strong>🔥 Калории:</strong> ${recipe.calories || '?'} ккал</p>
-                <h3>📋 Ингредиенты:</h3>
-                <ul>${recipe.ingredients.map(i => `<li>${i}</li>`).join('')}</ul>
-                <h3>👨‍🍳 Пошаговый рецепт:</h3>
-                <div class="steps-list">${recipe.steps.map(s => `<p>${s}</p>`).join('')}</div>
-                <h3>💡 Совет шефа:</h3>
-                <p class="chef-tip">${recipe.tip || 'Подавай с любовью и свежей зеленью!'}</p>
-            `;
-            document.getElementById('recipeModal').style.display = 'flex';
-        }
-
-        // ============================================
-        // НАСТРОЙКА ИНТЕРФЕЙСА
-        // ============================================
-        
-        function setupEventListeners() {
-            // Мобильное меню
-            document.getElementById('menuToggle')?.addEventListener('click', () => {
-                document.getElementById('mobileNav')?.classList.toggle('open');
-            });
-            
-            // Смена темы
-            document.querySelectorAll('.theme-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const theme = btn.getAttribute('data-theme');
-                    document.body.classList.remove('theme-green', 'theme-orange');
-                    document.body.classList.add(`theme-${theme}`);
-                    document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                });
-            });
-            
-            // Тип блюда
-            document.querySelectorAll('.type-buttons button').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    document.querySelectorAll('.type-buttons button').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    selectedType = btn.getAttribute('data-type');
-                });
-            });
-            
-            // Кнопка поиска
-            document.getElementById('findRecipesBtn')?.addEventListener('click', findRecipes);
-            
-            // Навигация по кухням
-            document.querySelectorAll('.nav-category').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    currentCuisine = btn.getAttribute('data-category');
-                    document.getElementById('mobileNav')?.classList.remove('open');
-                    if (selectedIngredients.size > 0) findRecipes();
-                });
-            });
-            
-            // ИИ-помощник
-            const aiModal = document.getElementById('aiModal');
-            const openAiBtn = document.getElementById('openAiAssistantBtn');
-            const closeAi = document.querySelector('.close-ai');
-            const askBtn = document.getElementById('askAiBtn');
-            const aiQuestion = document.getElementById('aiQuestion');
-            const aiAnswer = document.getElementById('aiAnswer');
-            
-            openAiBtn?.addEventListener('click', () => { if(aiModal) aiModal.style.display = 'flex'; });
-            closeAi?.addEventListener('click', () => { if(aiModal) aiModal.style.display = 'none'; });
-            
-            askBtn?.addEventListener('click', () => {
-                const q = aiQuestion?.value.trim();
-                const answer = aiHelper.getAnswer(q);
-                if(aiAnswer) aiAnswer.innerHTML = answer.replace(/\n/g, '<br>');
-            });
-            
-            // Закрытие модальных окон
-            const modal = document.getElementById('recipeModal');
-            document.querySelector('.close')?.addEventListener('click', () => { if(modal) modal.style.display = 'none'; });
-            window.onclick = (e) => { 
-                if (e.target === modal) modal.style.display = 'none'; 
-                if (e.target === aiModal) aiModal.style.display = 'none'; 
-            };
-            
-            // Нажатие Enter в поле вопроса ИИ
-            aiQuestion?.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    askBtn?.click();
-                }
-            });
-        }
-        
-        // ============================================
-        // ЗАПУСК
-        // ============================================
-        
-        renderIngredients();
-        setupEventListeners();
-        document.body.classList.add('theme-green');
-    </script>
-</body>
-</html>
+    .global-select-all, .global-deselect-all {
+        flex: 1;
+        text-align: center;
+    }
+}
