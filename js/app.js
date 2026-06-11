@@ -147,12 +147,12 @@ function renderRecipeCard(recipe, status) {
     const ingredientsPreview = recipe.ingredients.slice(0, 3).join(', ');
     const hasMore = recipe.ingredients.length > 3;
     
+    // Убрана лишняя строка с кухней
     return `
         <div class="recipe-card" data-id="${recipe.id}">
             ${statusBadge}
             <div class="recipe-img-placeholder">🍽️</div>
             <h4>${recipe.name}</h4>
-            <p>${getCuisineEmoji(recipe.cuisine)} ${getCuisineName(recipe.cuisine)} • ${recipe.type === 'salad' ? 'Салат' : recipe.type === 'soup' ? 'Суп' : recipe.type}</p>
             <div class="recipe-meta">⏱️ ${recipe.cookingTime || 30} мин • 🔥 ${recipe.calories || '?'} ккал</div>
             <small>📋 Ингредиенты: ${ingredientsPreview}${hasMore ? '...' : ''}</small>
             ${missingInfo}
@@ -172,7 +172,7 @@ function showRecipeModal(recipe) {
         <h2>${recipe.name}</h2>
         <div class="recipe-img-placeholder" style="height: 150px; margin-bottom: 15px;">🍽️</div>
         ${missingSection}
-        <p><strong>🍴 Кухня:</strong> ${getCuisineName(recipe.cuisine)} | <strong>⏱️ Время:</strong> ${recipe.cookingTime || 30} мин | <strong>🔥 Калории:</strong> ${recipe.calories || '?'} ккал</p>
+        <p><strong>⏱️ Время:</strong> ${recipe.cookingTime || 30} мин | <strong>🔥 Калории:</strong> ${recipe.calories || '?'} ккал</p>
         <h3>📋 Ингредиенты:</h3>
         <ul>${recipe.ingredients.map(i => `<li>${i}</li>`).join('')}</ul>
         <h3>👨‍🍳 Пошаговый рецепт:</h3>
