@@ -12,7 +12,7 @@ let groupData = new Map();
 
 // ========== ФУНКЦИИ ОБНОВЛЕНИЯ СОСТОЯНИЯ КНОПОК ==========
 
-// Обновляет кнопку "Выбрать всё" для группы
+// Обновляет кнопку "Выбрать всё" для группы (галочка если есть хоть один выбранный)
 function updateGroupSelectAllButton(groupName) {
     const data = groupData.get(groupName);
     if (!data) return;
@@ -21,17 +21,13 @@ function updateGroupSelectAllButton(groupName) {
     const selectedInGroup = buttons.filter(btn => btn.classList.contains('selected')).length;
     
     if (selectedInGroup > 0) {
-        // Хотя бы один продукт выбран
         selectAllBtn.innerHTML = '✅ Выбрать всё';
-        selectAllBtn.style.background = '#2ecc71';
     } else {
-        // Ничего не выбрано
         selectAllBtn.innerHTML = 'Выбрать всё';
-        selectAllBtn.style.background = '#2ecc71';
     }
 }
 
-// Обновляет кнопку "Убрать всё" для группы
+// Обновляет кнопку "Убрать всё" для группы (крестик если ничего не выбрано)
 function updateGroupDeselectAllButton(groupName) {
     const data = groupData.get(groupName);
     if (!data) return;
@@ -40,13 +36,9 @@ function updateGroupDeselectAllButton(groupName) {
     const selectedInGroup = buttons.filter(btn => btn.classList.contains('selected')).length;
     
     if (selectedInGroup === 0) {
-        // Ничего не выбрано
         deselectAllBtn.innerHTML = '❌ Убрать всё';
-        deselectAllBtn.style.background = '#e74c3c';
     } else {
-        // Есть выбранные
         deselectAllBtn.innerHTML = 'Убрать всё';
-        deselectAllBtn.style.background = '#e74c3c';
     }
 }
 
@@ -57,14 +49,17 @@ function updateGlobalButtons() {
     
     if (!selectAllGlobal || !deselectAllGlobal) return;
     
+    const totalProducts = allButtonsList.length;
     const selectedProducts = selectedIngredients.size;
     
-    if (selectedProducts > 0) {
+    // Глобальная кнопка "Выбрать всё" — галочка только если ВСЕ продукты выбраны
+    if (selectedProducts === totalProducts && totalProducts > 0) {
         selectAllGlobal.innerHTML = '✅ Выбрать всё';
     } else {
         selectAllGlobal.innerHTML = 'Выбрать всё';
     }
     
+    // Глобальная кнопка "Убрать всё" — крестик только если НИЧЕГО не выбрано
     if (selectedProducts === 0) {
         deselectAllGlobal.innerHTML = '❌ Убрать всё';
     } else {
@@ -212,11 +207,10 @@ function renderIngredients() {
         container.appendChild(groupDiv);
     });
     
-    // После отрисовки обновляем состояние кнопок
     updateAllButtonsState();
 }
 
-// ========== ОСТАЛЬНЫЕ ФУНКЦИИ (НЕ ИЗМЕНЯЛИСЬ) ==========
+// ========== ОСТАЛЬНЫЕ ФУНКЦИИ ==========
 
 function renderRecipeCard(recipe, status) {
     let statusBadge = '';
@@ -400,7 +394,6 @@ function setupEventListeners() {
     };
 }
 
-// Запуск
 renderIngredients();
 setupEventListeners();
 document.body.classList.add('theme-green');
