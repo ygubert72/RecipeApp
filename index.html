@@ -3,640 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Шеф-повар</title>
+    <title>Шеф-повар — рецепты из продуктов дома</title>
     
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%232ecc71' rx='20'/><text x='50%' y='50%' text-anchor='middle' dy='.35em' font-size='70' fill='white'>👨‍🍳</text></svg>">
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..600&display=swap" rel="stylesheet">
-    
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            transition: background 0.3s, color 0.2s;
-        }
-
-        body.theme-green {
-            --primary: #2ecc71;
-            --primary-dark: #229954;
-            --primary-light: #d5f5e3;
-            --bg-card: #ffffff;
-            --text: #1e2e1c;
-            --text-secondary: #5a7a55;
-            --accent-bg: #e8f8f0;
-            --border: #d5f5e3;
-            --shadow: rgba(46, 204, 113, 0.3);
-        }
-
-        body.theme-orange {
-            --primary: #e67e22;
-            --primary-dark: #ca6f1e;
-            --primary-light: #fdebd0;
-            --bg-card: #ffffff;
-            --text: #3e2a1f;
-            --text-secondary: #8b5a2b;
-            --accent-bg: #fef5e7;
-            --border: #fdebd0;
-            --shadow: rgba(230, 126, 34, 0.3);
-        }
-
-        body {
-            background: linear-gradient(135deg, var(--primary-light) 0%, var(--accent-bg) 100%);
-            color: var(--text);
-        }
-
-        .app-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 16px 28px;
-            border-radius: 60px;
-            margin-bottom: 30px;
-            box-shadow: 0 8px 32px var(--shadow);
-            border: 1px solid rgba(255,255,255,0.5);
-        }
-
-        h1 {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--primary-dark);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .menu-toggle {
-            display: none;
-            background: var(--primary-light);
-            border: none;
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            font-size: 24px;
-            cursor: pointer;
-            color: var(--primary-dark);
-            transition: all 0.1s;
-            box-shadow: 0 5px 0 rgba(0,0,0,0.15);
-        }
-        
-        .menu-toggle:active {
-            transform: translateY(2px);
-            box-shadow: 0 2px 0 rgba(0,0,0,0.15);
-        }
-
-        .theme-switch {
-            display: flex;
-            gap: 12px;
-            background: var(--primary-light);
-            padding: 6px;
-            border-radius: 60px;
-        }
-
-        .theme-switch button {
-            background: transparent;
-            border: none;
-            padding: 8px 20px;
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 14px;
-            transition: all 0.1s;
-            color: var(--text);
-            box-shadow: 0 3px 0 rgba(0,0,0,0.1);
-        }
-
-        .theme-switch button:active {
-            transform: translateY(2px);
-            box-shadow: 0 1px 0 rgba(0,0,0,0.1);
-        }
-
-        .theme-switch .active {
-            background: var(--primary);
-            color: white;
-            box-shadow: 0 3px 0 var(--primary-dark);
-        }
-
-        .mobile-nav {
-            display: none;
-            background: var(--bg-card);
-            border-radius: 28px;
-            margin-bottom: 24px;
-            padding: 20px;
-            box-shadow: 0 12px 40px var(--shadow);
-            border: 1px solid var(--border);
-        }
-
-        .mobile-nav.open {
-            display: block;
-            animation: slideDown 0.4s ease;
-        }
-
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .mobile-nav ul {
-            list-style: none;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-
-        .mobile-nav hr {
-            margin: 12px 0;
-            border-color: var(--border);
-        }
-
-        .mobile-nav button {
-            background: var(--primary-light);
-            border: none;
-            padding: 12px 24px;
-            border-radius: 50px;
-            font-weight: 600;
-            cursor: pointer;
-            color: var(--text);
-            transition: all 0.1s;
-            box-shadow: 0 5px 0 rgba(0,0,0,0.1);
-        }
-
-        .mobile-nav button:active {
-            transform: translateY(2px);
-            box-shadow: 0 2px 0 rgba(0,0,0,0.1);
-        }
-
-        .mobile-nav button:hover {
-            background: var(--primary);
-            color: white;
-        }
-
-        .mobile-nav .ai-assist-btn {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            box-shadow: 0 5px 0 var(--primary-dark);
-        }
-
-        .filters-panel {
-            background: var(--bg-card);
-            border-radius: 48px;
-            padding: 32px;
-            margin-bottom: 40px;
-            box-shadow: 0 20px 40px var(--shadow);
-            border: 1px solid var(--border);
-        }
-
-        .filters-panel h3 {
-            font-size: 1.4rem;
-            margin-bottom: 20px;
-            color: var(--primary-dark);
-        }
-
-        .ingredient-group {
-            margin-bottom: 20px;
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            overflow: hidden;
-            background: var(--bg-card);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        }
-
-        .group-header {
-            background: linear-gradient(135deg, var(--accent-bg), var(--primary-light));
-            padding: 16px 20px;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 12px;
-            transition: all 0.1s;
-            box-shadow: 0 3px 0 rgba(0,0,0,0.08);
-        }
-        
-        .group-header:active {
-            transform: translateY(2px);
-            box-shadow: 0 1px 0 rgba(0,0,0,0.08);
-        }
-
-        .group-title {
-            font-weight: 700;
-            font-size: 1rem;
-            flex-shrink: 0;
-            color: var(--primary-dark);
-        }
-
-        .group-actions {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            margin-left: auto;
-        }
-
-        .group-select-all, .group-deselect-all {
-            font-size: 11px;
-            padding: 5px 14px;
-            border-radius: 20px;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-            white-space: nowrap;
-            text-align: center;
-            transition: all 0.1s;
-            box-shadow: 0 3px 0 rgba(0,0,0,0.15);
-        }
-
-        .group-select-all:active, .group-deselect-all:active {
-            transform: translateY(2px);
-            box-shadow: 0 1px 0 rgba(0,0,0,0.15);
-        }
-
-        .group-select-all {
-            background: #2ecc71;
-            color: white;
-        }
-
-        .group-select-all:hover {
-            background: #27ae60;
-        }
-
-        .group-deselect-all {
-            background: #e74c3c;
-            color: white;
-        }
-
-        .group-deselect-all:hover {
-            background: #c0392b;
-        }
-
-        .group-toggle {
-            display: none;
-        }
-
-        .group-items {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            padding: 16px;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .ingredient-btn {
-            background: var(--primary-light);
-            border: none;
-            padding: 10px 18px;
-            border-radius: 50px;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--text);
-            transition: all 0.1s;
-            box-shadow: 0 4px 0 rgba(0,0,0,0.1);
-        }
-
-        .ingredient-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 0 rgba(0,0,0,0.1);
-        }
-
-        .ingredient-btn:active {
-            transform: translateY(2px);
-            box-shadow: 0 2px 0 rgba(0,0,0,0.1);
-        }
-
-        .ingredient-btn.selected {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            box-shadow: 0 4px 0 var(--primary-dark);
-        }
-
-        .type-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 14px;
-            margin: 20px 0;
-        }
-
-        .type-buttons button {
-            background: var(--primary-light);
-            border: none;
-            padding: 12px 28px;
-            border-radius: 60px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 15px;
-            color: var(--text);
-            transition: all 0.1s;
-            box-shadow: 0 5px 0 rgba(0,0,0,0.1);
-        }
-
-        .type-buttons button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 7px 0 rgba(0,0,0,0.1);
-        }
-
-        .type-buttons button:active {
-            transform: translateY(2px);
-            box-shadow: 0 2px 0 rgba(0,0,0,0.1);
-        }
-
-        .type-buttons button.active {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            box-shadow: 0 5px 0 var(--primary-dark);
-        }
-
-        .find-btn {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            border: none;
-            padding: 16px 32px;
-            font-size: 18px;
-            font-weight: 700;
-            border-radius: 60px;
-            margin-top: 24px;
-            cursor: pointer;
-            width: 100%;
-            transition: all 0.1s;
-            box-shadow: 0 8px 0 var(--primary-dark);
-        }
-
-        .find-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 0 var(--primary-dark);
-        }
-
-        .find-btn:active {
-            transform: translateY(4px);
-            box-shadow: 0 4px 0 var(--primary-dark);
-        }
-
-        .results-area h2 {
-            font-size: 1.8rem;
-            margin-bottom: 24px;
-            color: var(--primary-dark);
-        }
-
-        .results-section {
-            margin-bottom: 40px;
-        }
-
-        .section-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid;
-            flex-wrap: wrap;
-        }
-
-        .section-header.perfect { border-bottom-color: #2ecc71; }
-        .section-header.missing1 { border-bottom-color: #f39c12; }
-        .section-header.missing2 { border-bottom-color: #3498db; }
-
-        .section-icon { font-size: 28px; }
-        .section-header h3 { margin: 0; font-size: 1.3rem; color: var(--text); }
-        .section-desc { margin-left: auto; font-size: 0.8rem; color: var(--text-secondary); }
-
-        .recipes-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 24px;
-        }
-
-        @media (max-width: 900px) {
-            .recipes-grid { grid-template-columns: repeat(2, 1fr); }
-        }
-
-        @media (max-width: 600px) {
-            .recipes-grid { grid-template-columns: 1fr; }
-        }
-
-        .recipe-card {
-            background: var(--bg-card);
-            border-radius: 24px;
-            padding: 20px;
-            cursor: pointer;
-            transition: all 0.2s;
-            border: 1px solid var(--border);
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-        }
-
-        .recipe-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 16px 32px rgba(0,0,0,0.12);
-        }
-
-        .recipe-card:active {
-            transform: translateY(2px);
-        }
-
-        .recipe-badge {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            font-size: 11px;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-weight: 600;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .perfect-badge { background: #2ecc71; color: white; }
-        .missing1-badge { background: #f39c12; color: white; }
-        .missing2-badge { background: #3498db; color: white; }
-
-        .missing-warning {
-            background: #fef3c7;
-            color: #d97706;
-            padding: 8px 12px;
-            border-radius: 12px;
-            font-size: 12px;
-            margin-top: 12px;
-            border-left: 3px solid #f39c12;
-        }
-
-        body.theme-orange .missing-warning {
-            background: #fff3e0;
-            color: #e67e22;
-        }
-
-        .recipe-meta {
-            font-size: 12px;
-            opacity: 0.7;
-            margin: 8px 0;
-            display: flex;
-            gap: 12px;
-        }
-
-        .recipe-img-placeholder {
-            width: 100%;
-            height: 150px;
-            background: linear-gradient(135deg, var(--primary-light), var(--accent-bg));
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 48px;
-            margin-bottom: 16px;
-        }
-
-        .recipe-card h4 {
-            font-size: 1.2rem;
-            margin-bottom: 8px;
-            color: var(--primary-dark);
-            padding-right: 40px;
-        }
-
-        .recipe-card p {
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin-bottom: 8px;
-        }
-
-        .recipe-card small {
-            font-size: 11px;
-            color: var(--text-secondary);
-            margin-top: 8px;
-        }
-
-        .placeholder {
-            text-align: center;
-            padding: 80px 40px;
-            background: var(--bg-card);
-            border-radius: 48px;
-            border: 2px dashed var(--border);
-            color: var(--text-secondary);
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(8px);
-            z-index: 1100;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-content {
-            background: var(--bg-card);
-            max-width: 700px;
-            width: 90%;
-            border-radius: 48px;
-            padding: 32px;
-            max-height: 85vh;
-            overflow-y: auto;
-            position: relative;
-            box-shadow: 0 32px 64px rgba(0,0,0,0.2);
-        }
-
-        .close, .close-ai {
-            position: absolute;
-            right: 24px;
-            top: 24px;
-            font-size: 28px;
-            cursor: pointer;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            background: var(--primary-light);
-            transition: all 0.1s;
-            box-shadow: 0 3px 0 rgba(0,0,0,0.1);
-            color: var(--primary-dark);
-        }
-
-        .close:active, .close-ai:active {
-            transform: translateY(2px);
-            box-shadow: 0 1px 0 rgba(0,0,0,0.1);
-        }
-
-        .steps-list p {
-            margin: 12px 0;
-            padding-left: 20px;
-            border-left: 3px solid var(--primary);
-        }
-
-        .chef-tip {
-            background: var(--primary-light);
-            padding: 16px;
-            border-radius: 20px;
-            font-style: italic;
-            margin-top: 16px;
-            border-left: 4px solid var(--primary);
-        }
-
-        .ai-modal textarea {
-            width: 100%;
-            padding: 16px;
-            border-radius: 28px;
-            border: 1px solid var(--border);
-            margin: 16px 0;
-            font-family: inherit;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
-        }
-
-        #askAiBtn {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            border: none;
-            padding: 14px 32px;
-            border-radius: 60px;
-            cursor: pointer;
-            font-weight: 700;
-            transition: all 0.1s;
-            box-shadow: 0 6px 0 var(--primary-dark);
-        }
-
-        #askAiBtn:active {
-            transform: translateY(3px);
-            box-shadow: 0 3px 0 var(--primary-dark);
-        }
-
-        .ai-answer {
-            background: var(--accent-bg);
-            border-radius: 28px;
-            padding: 20px;
-            margin-top: 20px;
-        }
-
-        @media (max-width: 768px) {
-            .app-container { padding: 12px; }
-            .menu-toggle { display: flex; align-items: center; justify-content: center; }
-            h1 { font-size: 1.3rem; }
-            .section-header { flex-direction: column; align-items: flex-start; }
-            .section-desc { margin-left: 0; }
-            .group-header { flex-direction: column; align-items: stretch; }
-            .group-actions { flex-direction: row; margin-left: 0; justify-content: center; }
-            .group-title { text-align: center; }
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="app-container">
@@ -659,7 +31,7 @@
                 <li><button class="nav-module" data-module="pp">ПП-рецепты</button></li>
                 <li><button class="nav-module" data-module="cocktails">Коктейли</button></li>
                 <li><button class="nav-module" data-module="smoothies">Смузи</button></li>
-                <li><button id="openAiAssistantBtn" class="ai-assist-btn">ИИ-шеф</button></li>
+                <li><button id="openAiAssistantBtn" class="ai-assist-btn">🤖 ИИ-шеф</button></li>
             </ul>
         </nav>
 
@@ -688,9 +60,9 @@
             </div>
 
             <div class="results-area">
-                <h2>Рецепты</h2>
+                <h2>🍳 Рецепты</h2>
                 <div id="recipesList" class="recipes-list">
-                    <div class="placeholder">Выбери продукты и нажми "Найти рецепты"</div>
+                    <div class="placeholder">✨ Выбери продукты и нажми "Найти рецепты"</div>
                 </div>
             </div>
         </main>
@@ -705,8 +77,8 @@
         <div id="aiModal" class="modal">
             <div class="modal-content ai-modal">
                 <span class="close-ai">&times;</span>
-                <h2>ИИ-шеф-помощник</h2>
-                <p>Спроси о замене продуктов, тонкостях или технике:</p>
+                <h2>🤖 ИИ-шеф-помощник</h2>
+                <p>Спроси о замене продуктов, тонкостях приготовления или технике:</p>
                 <textarea id="aiQuestion" rows="3" placeholder="Например: чем заменить сливки в соусе?"></textarea>
                 <button id="askAiBtn">Спросить</button>
                 <div id="aiAnswer" class="ai-answer"></div>
@@ -715,8 +87,12 @@
     </div>
 
     <script type="module">
+        import { allRecipes } from './modules/recipes/index.js';
+        import IngredientMatcher from './modules/ingredientMatcher.js';
+        import AIHelper from './modules/aiHelper.js';
+
         // ============================================
-        // ПОЛНАЯ БАЗА ПРОДУКТОВ (с вашими добавлениями)
+        // БАЗА ПРОДУКТОВ
         // ============================================
         
         const ingredientsGroups = [
@@ -737,175 +113,17 @@
             { name: "🍰 Сладости", items: ["Сахар", "Какао", "Шоколад", "Мед", "Варенье", "Джем", "Конфитюр", "Кокосовая стружка"] }
         ];
 
+        // ============================================
+        // ИНИЦИАЛИЗАЦИЯ
+        // ============================================
+        
+        const ingredientMatcher = new IngredientMatcher();
+        const aiHelper = new AIHelper();
+        
         let selectedIngredients = new Set();
         let selectedType = "all";
         let currentCuisine = "all";
         let groupButtonsMap = new Map();
-        
-        import { allRecipes } from './modules/recipes/index.js';
-        console.log(`Загружено рецептов: ${allRecipes.length}`);
-
-        // ============================================
-        // УЛУЧШЕННАЯ НОРМАЛИЗАЦИЯ СЛОВ
-        // ============================================
-        
-        function normalizeIngredient(name) {
-            let normalized = name.toLowerCase().trim();
-            
-            // Убираем всё, что в скобках (включая кириллические)
-            normalized = normalized.replace(/[\(（][^\)）]*[\)）]/g, '');
-            
-            // Убираем тире, длинное тире, дефис и всё после них
-            normalized = normalized.replace(/\s*[-—–]\s*.*$/, '');
-            
-            // Убираем количество в начале (цифры, дроби)
-            normalized = normalized.replace(/^[\d\s\/\+\-\(\)]+/, '');
-            
-            // Убираем слова-маркеры количества
-            normalized = normalized.replace(/^(около|примерно|~|по\s*вкусу|до|несколько)\s*/i, '');
-            
-            // Убираем единицы измерения (полный список)
-            normalized = normalized.replace(/\s*(г|гр|грамм|грамма|кг|мл|л|шт|штук|штуки|банка|банки|пучок|пучка|зубчик|зубчика|ст\.?\s*ложк[аи]|ложк[аи]|ст\.?\s*л|ч\.?\s*ложк[аи]|ч\.?\s*л|стакан[а]?|стак\.|капля|капель)\b.*$/i, '');
-            
-            // Убираем варианты написания "столовая ложка", "чайная ложка"
-            normalized = normalized.replace(/\s*(столовая|чайная|десертная)\s*ложка\b.*$/i, '');
-            
-            // Убираем прилагательные
-            const removeWords = [
-                'свежий', 'свежие', 'свежая', 'свежее',
-                'соленые', 'соленый', 'соленая',
-                'маринованные', 'маринованный', 'маринованная',
-                'вареная', 'вареный', 'варёный',
-                'копченая', 'копченый', 'копчёный',
-                'слабосоленая', 'слабосоленый',
-                'сушеный', 'сушеные', 'вяленый', 'вяленые',
-                'консервированный', 'консервированная',
-                'замороженный', 'замороженные'
-            ];
-            
-            for (let word of removeWords) {
-                normalized = normalized.replace(new RegExp(`\\b${word}\\s*`, 'gi'), '');
-            }
-            
-            // Убираем слова "по вкусу", "по желанию"
-            normalized = normalized.replace(/\s*по\s*(вкусу|желанию|необходимости)\s*/gi, '');
-            
-            // Убираем лишние пробелы
-            normalized = normalized.trim();
-            
-            // Приведение множественного числа к единственному
-            const pluralRules = [
-                { from: /яйц[ао]$/i, to: 'яйцо' }, { from: /яиц$/i, to: 'яйцо' },
-                { from: /огурц[ыи]$/i, to: 'огурец' }, { from: /помидор[ыа]$/i, to: 'помидор' },
-                { from: /картофел[ия]$/i, to: 'картофель' }, { from: /морков[и]$/i, to: 'морковь' },
-                { from: /лук[аи]$/i, to: 'лук' }, { from: /сосисок$/i, to: 'сосиска' },
-                { from: /сосиск[и]$/i, to: 'сосиска' }, { from: /яблок[ао]$/i, to: 'яблоко' },
-                { from: /груш[и]$/i, to: 'груша' }, { from: /банан[овы]?$/i, to: 'банан' },
-                { from: /апельсин[аов]?$/i, to: 'апельсин' }, { from: /лимоны$/i, to: 'лимон' },
-                { from: /сыр[аов]?$/i, to: 'сыр' }, { from: /гриб[аов]?$/i, to: 'гриб' },
-                { from: /орех[аов]?$/i, to: 'орех' }, { from: /лист[ьа]?я?$/i, to: 'лист' },
-                { from: /веточк[аи]$/i, to: 'веточка' }
-            ];
-            
-            for (let rule of pluralRules) {
-                if (rule.from.test(normalized)) {
-                    normalized = normalized.replace(rule.from, rule.to);
-                    break;
-                }
-            }
-            
-            // Удаляем окончание "и" в конце слова (для некоторых случаев)
-            if (normalized.endsWith('и') && normalized.length > 2) {
-                const withoutI = normalized.slice(0, -1);
-                if (!withoutI.endsWith('к') && !withoutI.endsWith('ш')) {
-                    normalized = withoutI;
-                }
-            }
-            
-            return normalized;
-        }
-
-        // ============================================
-        // СРАВНЕНИЕ ИНГРЕДИЕНТОВ С СИНОНИМАМИ
-        // ============================================
-        
-        function isIngredientMatch(userIngredient, recipeIngredient) {
-            const userNorm = normalizeIngredient(userIngredient);
-            const recipeNorm = normalizeIngredient(recipeIngredient);
-            
-            if (userNorm === recipeNorm) return true;
-            
-            // Проверка вхождения
-            if (userNorm.includes(recipeNorm) || recipeNorm.includes(userNorm)) return true;
-            
-            // Расширенный словарь синонимов
-            const synonymMap = {
-                'масло подсолнечное': ['масло растительное', 'подсолнечное масло', 'растительное масло', 'масло'],
-                'масло растительное': ['масло подсолнечное', 'подсолнечное масло', 'масло'],
-                'масло оливковое': ['оливковое масло', 'масло'],
-                'салат': ['салат листовой', 'листья салата', 'салатные листья', 'лист салата', 'салатные листья'],
-                'салат листовой': ['салат', 'листья салата'],
-                'сельдерей': ['сельдерей черешковый', 'сельдерей стеблевой', 'черешковый сельдерей'],
-                'сельдерей черешковый': ['сельдерей', 'сельдерей стеблевой'],
-                'перец черный': ['перец черный молотый', 'черный перец', 'молотый перец'],
-                'перец черный молотый': ['перец черный', 'черный перец'],
-                'сыр': ['сыр твердый', 'сыр твёрдый'],
-                'сыр твердый': ['сыр', 'твёрдый сыр'],
-                'курица': ['куриное филе', 'куриная грудка', 'курица копченая'],
-                'курица копченая': ['курица', 'копченая курица'],
-                'яйцо': ['яйца', 'куриное яйцо'],
-                'яйца': ['яйцо', 'куриное яйцо']
-            };
-            
-            // Проверка для userNorm
-            if (synonymMap[userNorm]) {
-                for (let syn of synonymMap[userNorm]) {
-                    if (syn === recipeNorm || recipeNorm.includes(syn) || syn.includes(recipeNorm)) {
-                        return true;
-                    }
-                }
-            }
-            
-            // Проверка для recipeNorm
-            if (synonymMap[recipeNorm]) {
-                for (let syn of synonymMap[recipeNorm]) {
-                    if (syn === userNorm || userNorm.includes(syn) || syn.includes(userNorm)) {
-                        return true;
-                    }
-                }
-            }
-            
-            // Расширенные специальные пары
-            const specialPairs = [
-                ['курица', 'куриное филе'], ['куриное филе', 'курица'],
-                ['курица', 'куриная грудка'], ['куриная грудка', 'курица'],
-                ['курица', 'курица копченая'], ['курица копченая', 'курица'],
-                ['огурец', 'огурцы'], ['помидор', 'помидоры'],
-                ['яйцо', 'яйца'], ['сыр', 'сыр твердый'],
-                ['сыр твердый', 'сыр'], ['перец черный', 'перец черный молотый'],
-                ['перец черный молотый', 'перец черный'],
-                ['масло подсолнечное', 'масло растительное'],
-                ['масло растительное', 'масло подсолнечное'],
-                ['салат', 'салат листовой'], ['сельдерей', 'сельдерей черешковый'],
-                ['майонез', 'майонез провансаль'],
-                ['сметана', 'сметана 20%'], ['сметана 20%', 'сметана'],
-                ['лук', 'лук репчатый'], ['лук репчатый', 'лук'],
-                ['чеснок', 'зубчик чеснока'], ['зубчик чеснока', 'чеснок'],
-                ['масло сливочное', 'сливочное масло'],
-                ['уксус', 'уксус столовый'], ['уксус столовый', 'уксус'],
-                ['лимон', 'лимонный сок'], ['лимонный сок', 'лимон'],
-                ['рак', 'раки'], ['лангуст', 'лангусты'], ['омар', 'омары']
-            ];
-            
-            for (let pair of specialPairs) {
-                if ((userNorm === pair[0] && recipeNorm === pair[1]) ||
-                    (userNorm === pair[1] && recipeNorm === pair[0])) {
-                    return true;
-                }
-            }
-            
-            return false;
-        }
 
         // ============================================
         // ОТРИСОВКА ГРУПП ПРОДУКТОВ
@@ -1006,7 +224,7 @@
         }
 
         // ============================================
-        // ПОИСК РЕЦЕПТОВ
+        // ПОИСК РЕЦЕПТОВ (с использованием IngredientMatcher)
         // ============================================
         
         function findRecipes() {
@@ -1024,29 +242,19 @@
             let missing2Match = [];
             
             allRecipes.forEach(recipe => {
+                // Фильтр по типу блюда
                 if (selectedType !== "all" && recipe.type !== selectedType) return;
+                // Фильтр по кухне
                 if (currentCuisine !== "all" && recipe.cuisine !== currentCuisine) return;
                 
-                let missingIngredients = [];
-                let matchedIngredients = [];
-                
-                recipe.ingredients.forEach(recipeIng => {
-                    const found = userIngredients.some(userIng => isIngredientMatch(userIng, recipeIng));
-                    if (found) {
-                        matchedIngredients.push(recipeIng);
-                    } else {
-                        missingIngredients.push(recipeIng);
-                    }
-                });
-                
-                const missingCount = missingIngredients.length;
+                const { missing, missingCount } = ingredientMatcher.findMissingIngredients(recipe, userIngredients);
                 
                 if (missingCount === 0) {
                     perfectMatches.push({ ...recipe, missingIngredients: [] });
                 } else if (missingCount === 1) {
-                    missing1Match.push({ ...recipe, missingIngredients });
+                    missing1Match.push({ ...recipe, missingIngredients: missing });
                 } else if (missingCount === 2) {
-                    missing2Match.push({ ...recipe, missingIngredients });
+                    missing2Match.push({ ...recipe, missingIngredients: missing });
                 }
             });
             
@@ -1102,7 +310,7 @@
                     ${statusBadge}
                     <div class="recipe-img-placeholder">🍽️</div>
                     <h4>${recipe.name}</h4>
-                    <p>${getCuisineEmoji(recipe.cuisine)} ${getCuisineName(recipe.cuisine)} • ${recipe.type}</p>
+                    <p>${getCuisineEmoji(recipe.cuisine)} ${getCuisineName(recipe.cuisine)} • ${recipe.type === 'salad' ? 'Салат' : recipe.type === 'snack' ? 'Закуска' : recipe.type}</p>
                     <div class="recipe-meta">⏱️ ${recipe.cookingTime || 30} мин • 🔥 ${recipe.calories || '?'} ккал</div>
                     <small>📋 Ингредиенты: ${ingredientsPreview}${hasMore ? '...' : ''}</small>
                     ${missingInfo}
@@ -1148,10 +356,12 @@
         // ============================================
         
         function setupEventListeners() {
+            // Мобильное меню
             document.getElementById('menuToggle')?.addEventListener('click', () => {
                 document.getElementById('mobileNav')?.classList.toggle('open');
             });
             
+            // Смена темы
             document.querySelectorAll('.theme-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const theme = btn.getAttribute('data-theme');
@@ -1162,6 +372,7 @@
                 });
             });
             
+            // Тип блюда
             document.querySelectorAll('.type-buttons button').forEach(btn => {
                 btn.addEventListener('click', () => {
                     document.querySelectorAll('.type-buttons button').forEach(b => b.classList.remove('active'));
@@ -1170,8 +381,10 @@
                 });
             });
             
+            // Кнопка поиска
             document.getElementById('findRecipesBtn')?.addEventListener('click', findRecipes);
             
+            // Навигация по кухням
             document.querySelectorAll('.nav-category').forEach(btn => {
                 btn.addEventListener('click', () => {
                     currentCuisine = btn.getAttribute('data-category');
@@ -1180,6 +393,7 @@
                 });
             });
             
+            // ИИ-помощник
             const aiModal = document.getElementById('aiModal');
             const openAiBtn = document.getElementById('openAiAssistantBtn');
             const closeAi = document.querySelector('.close-ai');
@@ -1192,28 +406,25 @@
             
             askBtn?.addEventListener('click', () => {
                 const q = aiQuestion?.value.trim();
-                if (!q) {
-                    if(aiAnswer) aiAnswer.innerHTML = '❓ Напишите ваш вопрос о готовке!';
-                    return;
-                }
-                aiAnswer.innerHTML = '🧑‍🍳 ' + getAIAnswer(q);
+                const answer = aiHelper.getAnswer(q);
+                if(aiAnswer) aiAnswer.innerHTML = answer.replace(/\n/g, '<br>');
             });
             
+            // Закрытие модальных окон
             const modal = document.getElementById('recipeModal');
             document.querySelector('.close')?.addEventListener('click', () => { if(modal) modal.style.display = 'none'; });
             window.onclick = (e) => { 
                 if (e.target === modal) modal.style.display = 'none'; 
                 if (e.target === aiModal) aiModal.style.display = 'none'; 
             };
-        }
-        
-        function getAIAnswer(question) {
-            const q = question.toLowerCase();
-            if (q.includes('заменить яйца')) return 'Яйца можно заменить: банановым пюре (1 яйцо = 1/2 банана), льняной мукой с водой, или тофу.';
-            if (q.includes('заменить сливки')) return 'Сливки заменяют: кокосовое молоко, смесь молока с маслом, или густая сметана с молоком.';
-            if (q.includes('сочное мясо')) return 'Маринуй в кефире/йогурте 2 часа, не пережаривай, дай отдохнуть 5-10 минут после готовки.';
-            if (q.includes('хрустящая корочка')) return 'Обсуши продукты перед жаркой, используй панировку, жарь на хорошо разогретой сковороде.';
-            return `Отличный вопрос! Совет: всегда пробуй блюдо в процессе готовки.`;
+            
+            // Нажатие Enter в поле вопроса ИИ
+            aiQuestion?.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    askBtn?.click();
+                }
+            });
         }
         
         // ============================================
@@ -1223,8 +434,6 @@
         renderIngredients();
         setupEventListeners();
         document.body.classList.add('theme-green');
-        
-        console.log("✅ Приложение загружено!");
     </script>
 </body>
 </html>
