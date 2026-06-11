@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Шеф-повар — рецепты из продуктов дома</title>
+    <title>Шеф-повар</title>
     
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%232ecc71' rx='20'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.35em' font-size='70' fill='white'%3E👨‍🍳%3C/text%3E%3C/svg%3E">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%232ecc71' rx='20'/><text x='50%' y='50%' text-anchor='middle' dy='.35em' font-size='70' fill='white'>👨‍🍳</text></svg>">
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
@@ -22,14 +22,7 @@
         </header>
 
         <nav class="mobile-nav" id="mobileNav">
-            <ul>
-                <li><button class="nav-category" data-category="all">Все рецепты</button></li>
-                <li><button class="nav-category" data-category="russian">Русская</button></li>
-                <li><button class="nav-category" data-category="eastern">Восточная</button></li>
-                <li><button class="nav-category" data-category="european">Европейская</button></li>
-                <li><hr></li>
-                <li><button id="openAiAssistantBtn" class="ai-assist-btn">🤖 ИИ-шеф</button></li>
-            </ul>
+            <!-- Мобильное меню пустое -->
         </nav>
 
         <main>
@@ -63,15 +56,30 @@
             </div>
 
             <div class="results-area">
-                <h2>🍳 Рецепты</h2>
+                <h2>Рецепты</h2>
                 <div id="recipesList" class="recipes-list">
-                    <div class="placeholder">✨ Выбери продукты и нажми "Найти рецепты"</div>
+                    <div class="placeholder">Выбери продукты и нажми "Найти рецепты"</div>
                 </div>
             </div>
         </main>
 
-        <div id="recipeModal" class="modal"><div class="modal-content"><span class="close">&times;</span><div id="modalRecipeBody"></div></div></div>
-        <div id="aiModal" class="modal"><div class="modal-content ai-modal"><span class="close-ai">&times;</span><h2>🤖 ИИ-шеф-помощник</h2><p>Спроси о замене продуктов:</p><textarea id="aiQuestion" rows="3" placeholder="Например: чем заменить сливки?"></textarea><button id="askAiBtn">Спросить</button><div id="aiAnswer" class="ai-answer"></div></div></div>
+        <div id="recipeModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <div id="modalRecipeBody"></div>
+            </div>
+        </div>
+
+        <div id="aiModal" class="modal">
+            <div class="modal-content ai-modal">
+                <span class="close-ai">&times;</span>
+                <h2>ИИ-шеф-помощник</h2>
+                <p>Спроси о замене продуктов, тонкостях или технике:</p>
+                <textarea id="aiQuestion" rows="3" placeholder="Например: чем заменить сливки в соусе?"></textarea>
+                <button id="askAiBtn">Спросить</button>
+                <div id="aiAnswer" class="ai-answer"></div>
+            </div>
+        </div>
     </div>
 
     <script type="module" src="js/app.js"></script>
