@@ -120,16 +120,6 @@ function renderIngredients() {
     });
 }
 
-function getCuisineEmoji(cuisine) {
-    const map = { russian: '🍞', eastern: '🥘', european: '🍷' };
-    return map[cuisine] || '🍽️';
-}
-
-function getCuisineName(cuisine) {
-    const map = { russian: 'Русская', eastern: 'Восточная', european: 'Европейская' };
-    return map[cuisine] || cuisine;
-}
-
 function renderRecipeCard(recipe, status) {
     let statusBadge = '';
     let missingInfo = '';
@@ -203,6 +193,7 @@ window.findRecipes = function() {
         let missingIngredients = [];
         
         recipe.ingredients.forEach(recipeIng => {
+            if (!recipeIng || recipeIng.trim() === '') return;
             const found = userIngredients.some(userIng => isIngredientMatch(userIng, recipeIng));
             if (!found) missingIngredients.push(recipeIng);
         });
@@ -256,7 +247,6 @@ function setupEventListeners() {
         document.getElementById('mobileNav')?.classList.toggle('open');
     });
     
-    // Переключение темы
     document.querySelectorAll('.theme-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             const theme = btn.getAttribute('data-theme');
