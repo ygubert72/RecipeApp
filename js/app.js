@@ -8,8 +8,81 @@ let selectedIngredients = new Set();
 let selectedType = "all";
 let currentCuisine = "all";
 let allButtonsList = [];
+let groupData = new Map();
 
-// Глобальные функции
+// ========== ФУНКЦИИ ОБНОВЛЕНИЯ СОСТОЯНИЯ КНОПОК ==========
+
+// Обновляет кнопку "Выбрать всё" для группы
+function updateGroupSelectAllButton(groupName) {
+    const data = groupData.get(groupName);
+    if (!data) return;
+    
+    const { buttons, selectAllBtn } = data;
+    const selectedInGroup = buttons.filter(btn => btn.classList.contains('selected')).length;
+    
+    if (selectedInGroup > 0) {
+        // Хотя бы один продукт выбран
+        selectAllBtn.innerHTML = '✅ Выбрать всё';
+        selectAllBtn.style.background = '#2ecc71';
+    } else {
+        // Ничего не выбрано
+        selectAllBtn.innerHTML = 'Выбрать всё';
+        selectAllBtn.style.background = '#2ecc71';
+    }
+}
+
+// Обновляет кнопку "Убрать всё" для группы
+function updateGroupDeselectAllButton(groupName) {
+    const data = groupData.get(groupName);
+    if (!data) return;
+    
+    const { buttons, deselectAllBtn } = data;
+    const selectedInGroup = buttons.filter(btn => btn.classList.contains('selected')).length;
+    
+    if (selectedInGroup === 0) {
+        // Ничего не выбрано
+        deselectAllBtn.innerHTML = '❌ Убрать всё';
+        deselectAllBtn.style.background = '#e74c3c';
+    } else {
+        // Есть выбранные
+        deselectAllBtn.innerHTML = 'Убрать всё';
+        deselectAllBtn.style.background = '#e74c3c';
+    }
+}
+
+// Обновляет глобальные кнопки
+function updateGlobalButtons() {
+    const selectAllGlobal = document.getElementById('selectAllIngredientsBtn');
+    const deselectAllGlobal = document.getElementById('deselectAllIngredientsBtn');
+    
+    if (!selectAllGlobal || !deselectAllGlobal) return;
+    
+    const selectedProducts = selectedIngredients.size;
+    
+    if (selectedProducts > 0) {
+        selectAllGlobal.innerHTML = '✅ Выбрать всё';
+    } else {
+        selectAllGlobal.innerHTML = 'Выбрать всё';
+    }
+    
+    if (selectedProducts === 0) {
+        deselectAllGlobal.innerHTML = '❌ Убрать всё';
+    } else {
+        deselectAllGlobal.innerHTML = 'Убрать всё';
+    }
+}
+
+// Обновляет всё после изменения выбора
+function updateAllButtonsState() {
+    for (let [groupName, data] of groupData.entries()) {
+        updateGroupSelectAllButton(groupName);
+        updateGroupDeselectAllButton(groupName);
+    }
+    updateGlobalButtons();
+}
+
+// ========== ГЛОБАЛЬНЫЕ ФУНКЦИИ ==========
+
 window.selectAllIngredients = function() {
     allButtonsList.forEach(btn => {
         if (!btn.classList.contains('selected')) {
@@ -17,6 +90,7 @@ window.selectAllIngredients = function() {
             selectedIngredients.add(btn.textContent);
         }
     });
+    updateAllButtonsState();
 };
 
 window.deselectAllIngredients = function() {
@@ -26,13 +100,17 @@ window.deselectAllIngredients = function() {
             selectedIngredients.delete(btn.textContent);
         }
     });
+    updateAllButtonsState();
 };
+
+// ========== ОТРИСОВКА КАТЕГОРИЙ ==========
 
 function renderIngredients() {
     const container = document.getElementById('ingredientsGroupsContainer');
     if (!container) return;
     container.innerHTML = '';
     allButtonsList = [];
+    groupData.clear();
     
     ingredientsGroups.forEach(group => {
         const groupDiv = document.createElement('div');
@@ -66,6 +144,8 @@ function renderIngredients() {
         itemsDiv.className = 'group-items';
         itemsDiv.style.display = 'none';
         
+        const groupButtons = [];
+        
         group.items.forEach(item => {
             const btn = document.createElement('button');
             btn.textContent = item;
@@ -77,33 +157,46 @@ function renderIngredients() {
                 } else {
                     selectedIngredients.delete(item);
                 }
+                updateAllButtonsState();
             });
             itemsDiv.appendChild(btn);
+            groupButtons.push(btn);
             allButtonsList.push(btn);
         });
         
+        // Сохраняем данные о группе
+        groupData.set(group.name, {
+            buttons: groupButtons,
+            selectAllBtn: selectAllBtn,
+            deselectAllBtn: deselectAllBtn,
+            groupItems: itemsDiv
+        });
+        
+        // Логика для кнопки "Выбрать всё" в группе
         selectAllBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            group.items.forEach(item => {
-                const btn = Array.from(itemsDiv.children).find(b => b.textContent === item);
-                if (btn && !btn.classList.contains('selected')) {
+            groupButtons.forEach(btn => {
+                if (!btn.classList.contains('selected')) {
                     btn.classList.add('selected');
-                    selectedIngredients.add(item);
+                    selectedIngredients.add(btn.textContent);
                 }
             });
+            updateAllButtonsState();
         });
         
+        // Логика для кнопки "Убрать всё" в группе
         deselectAllBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            group.items.forEach(item => {
-                const btn = Array.from(itemsDiv.children).find(b => b.textContent === item);
-                if (btn && btn.classList.contains('selected')) {
+            groupButtons.forEach(btn => {
+                if (btn.classList.contains('selected')) {
                     btn.classList.remove('selected');
-                    selectedIngredients.delete(item);
+                    selectedIngredients.delete(btn.textContent);
                 }
             });
+            updateAllButtonsState();
         });
         
+        // Сворачивание/разворачивание
         let collapsed = true;
         header.addEventListener('click', (e) => {
             if (e.target === selectAllBtn || e.target === deselectAllBtn ||
@@ -118,7 +211,12 @@ function renderIngredients() {
         groupDiv.appendChild(itemsDiv);
         container.appendChild(groupDiv);
     });
+    
+    // После отрисовки обновляем состояние кнопок
+    updateAllButtonsState();
 }
+
+// ========== ОСТАЛЬНЫЕ ФУНКЦИИ (НЕ ИЗМЕНЯЛИСЬ) ==========
 
 function renderRecipeCard(recipe, status) {
     let statusBadge = '';
