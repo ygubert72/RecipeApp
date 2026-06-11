@@ -1,7 +1,7 @@
 // js/recipes.js
-import { allRecipes as salads } from '../modules/recipes/salads.js';
-import { allRecipes as snacks } from '../modules/recipes/snacks.js';
-import { allRecipes as soups } from '../modules/recipes/soups.js';
+import { salads } from '../modules/recipes/salads.js';
+import { snacks } from '../modules/recipes/snacks.js';
+import { soups } from '../modules/recipes/soups.js';
 
 // Объединяем все рецепты
 export const allRecipes = [
@@ -11,3 +11,4 @@ export const allRecipes = [
 ];
 
 console.log(`📚 Загружено рецептов: ${allRecipes.length}`);
+console.log(`📋 Из них: салатов - ${salads.length}, закусок - ${snacks.length}, супов - ${soups.length}`);
