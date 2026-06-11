@@ -59,12 +59,8 @@ function updateGlobalButtons() {
         selectAllGlobal.innerHTML = 'Выбрать всё';
     }
     
-    // Глобальная кнопка "Убрать всё" — крестик только если НИЧЕГО не выбрано
-    if (selectedProducts === 0) {
-        deselectAllGlobal.innerHTML = '❌ Убрать всё';
-    } else {
-        deselectAllGlobal.innerHTML = 'Убрать всё';
-    }
+    // Глобальная кнопка "Убрать всё" — всегда без иконки
+    deselectAllGlobal.innerHTML = 'Убрать всё';
 }
 
 // Обновляет всё после изменения выбора
