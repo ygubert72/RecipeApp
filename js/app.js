@@ -147,7 +147,6 @@ function renderRecipeCard(recipe, status) {
     const ingredientsPreview = recipe.ingredients.slice(0, 3).join(', ');
     const hasMore = recipe.ingredients.length > 3;
     
-    // Убрана лишняя строка с кухней
     return `
         <div class="recipe-card" data-id="${recipe.id}">
             ${statusBadge}
@@ -257,6 +256,7 @@ function setupEventListeners() {
         document.getElementById('mobileNav')?.classList.toggle('open');
     });
     
+    // Переключение темы
     document.querySelectorAll('.theme-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             const theme = btn.getAttribute('data-theme');
