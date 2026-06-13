@@ -1,6 +1,6 @@
 // modules/ingredientMatcher.js
 // Универсальный модуль для сравнения ингредиентов
-// Работает с любыми перестановками слов автоматически
+// Поддерживает: перестановку слов, множественное число, синонимы
 
 export class IngredientMatcher {
     constructor() {
@@ -8,30 +8,87 @@ export class IngredientMatcher {
     }
     
     initSynonymMap() {
-        // Только специфические синонимы, которые не решаются сортировкой
-        // Например: "картофель" и "картошка" - это разные слова
+        // Только специфические синонимы, которые не решаются автоматически
         this.synonymMap = {
             'картофель': ['картошка', 'картофелина'],
             'картошка': ['картофель', 'картофелина'],
-            'помидор': ['томат', 'помидоры'],
-            'помидоры': ['томат', 'томаты', 'помидор'],
-            'томат': ['помидор', 'помидоры'],
-            'томаты': ['помидоры', 'помидор'],
-            'лук': ['луковица'],
-            'чеснок': ['чесночина', 'зубок чеснока'],
+            'помидор': ['томат'],
+            'томат': ['помидор'],
             'свекла': ['буряк'],
             'морковь': ['морковка'],
+            'лук': ['луковица'],
+            'чеснок': ['чесночина', 'зубок чеснока'],
             'масло растительное': ['растительное масло', 'подсолнечное масло', 'масло подсолнечное'],
             'куриное филе': ['курица', 'куриная грудка', 'филе куриное'],
-            'яйца': ['яйцо', 'куриное яйцо'],
+            'яйцо': ['яйца', 'куриное яйцо'],
             'семга': ['лосось'],
-            'сельдь': ['селедка']
+            'сельдь': ['селедка'],
+            'грецкий орех': ['орех грецкий', 'грецкие орехи', 'орехи грецкие']
         };
     }
     
     /**
-     * Универсальная нормализация с сортировкой слов
-     * Автоматически решает проблему перестановки
+     * Приведение слова к единственному числу
+     */
+    toSingular(word) {
+        if (!word) return word;
+        
+        // Специальные случаи (самые частые)
+        const specialCases = {
+            'орехи': 'орех',
+            'яйца': 'яйцо',
+            'помидоры': 'помидор',
+            'огурцы': 'огурец',
+            'кабачки': 'кабачок',
+            'баклажаны': 'баклажан',
+            'перцы': 'перец',
+            'грибы': 'гриб',
+            'сыры': 'сыр',
+            'масла': 'масло',
+            'рыбы': 'рыба',
+            'луки': 'лук',
+            'моркови': 'морковь',
+            'свеклы': 'свекла',
+            'тыквы': 'тыква',
+            'яблоки': 'яблоко',
+            'груши': 'груша',
+            'бананы': 'банан',
+            'апельсины': 'апельсин',
+            'лимоны': 'лимон',
+            'мандарины': 'мандарин',
+            'персики': 'персик',
+            'абрикосы': 'абрикос',
+            'сливы': 'слива',
+            'вишни': 'вишня',
+            'клубники': 'клубника',
+            'малины': 'малина',
+            'сосиски': 'сосиска',
+            'сардельки': 'сарделька'
+        };
+        
+        if (specialCases[word]) {
+            return specialCases[word];
+        }
+        
+        // Общие правила
+        if (word.endsWith('ы') && !word.endsWith('и')) {
+            return word.slice(0, -1);
+        }
+        if (word.endsWith('и') && word.length > 2) {
+            // "огурцы" -> "огурец" (особый случай, уже обработан)
+            if (word.endsWith('цы')) return word.slice(0, -2) + 'ц';
+            if (word.endsWith('ки')) return word.slice(0, -2) + 'к';
+            return word.slice(0, -1);
+        }
+        if (word.endsWith('я')) {
+            return word.slice(0, -1) + 'е';
+        }
+        
+        return word;
+    }
+    
+    /**
+     * Универсальная нормализация с сортировкой слов и приведением к ед.числу
      */
     normalizeIngredient(name) {
         if (!name) return '';
@@ -41,7 +98,7 @@ export class IngredientMatcher {
         // Замена ё на е
         normalized = normalized.replace(/ё/g, 'е');
         
-        // Убираем всё, что в скобках
+        // Убираем всё в скобках
         normalized = normalized.replace(/[\(（][^\)）]*[\)）]/g, '');
         
         // Убираем тире и всё после них
@@ -61,12 +118,12 @@ export class IngredientMatcher {
             'свежий', 'свежие', 'свежая', 'свежее',
             'соленые', 'соленый', 'соленая', 'солёный',
             'маринованные', 'маринованный', 'маринованная',
-            'вареная', 'вареный', 'варёный', 'варёная',
-            'копченая', 'копченый', 'копчёный', 'копчёная',
-            'слабосоленая', 'слабосоленый', 'слабосолёный',
+            'вареная', 'вареный', 'варёный',
+            'копченая', 'копченый', 'копчёный',
+            'слабосоленая', 'слабосоленый',
             'сушеный', 'сушеные', 'вяленый', 'вяленые',
-            'консервированный', 'консервированная', 'консервированные',
-            'замороженный', 'замороженные', 'замороженная'
+            'консервированный', 'консервированная',
+            'замороженный', 'замороженные'
         ];
         
         for (let word of removeWords) {
@@ -80,16 +137,21 @@ export class IngredientMatcher {
         normalized = normalized.trim();
         normalized = normalized.replace(/\s+/g, ' ');
         
+        // Разбиваем на слова
+        let words = normalized.split(/\s+/);
+        
+        // ========== ПРИВОДИМ КАЖДОЕ СЛОВО К ЕДИНСТВЕННОМУ ЧИСЛУ ==========
+        words = words.map(word => this.toSingular(word));
+        
         // ========== УНИВЕРСАЛЬНАЯ СОРТИРОВКА СЛОВ ==========
-        // Это ключевое решение - сортируем все слова по алфавиту
-        // Теперь "грецкий орех" и "орех грецкий" станут одинаковыми
-        const words = normalized.split(/\s+/);
         if (words.length > 1) {
             words.sort();
-            normalized = words.join(' ');
         }
         
-        return normalized;
+        // Удаляем дубликаты
+        words = [...new Set(words)];
+        
+        return words.join(' ');
     }
     
     /**
@@ -101,50 +163,51 @@ export class IngredientMatcher {
         const userNorm = this.normalizeIngredient(userIngredient);
         const recipeNorm = this.normalizeIngredient(recipeIngredient);
         
-        // Прямое сравнение после нормализации
+        // Прямое сравнение
         if (userNorm === recipeNorm) return true;
         
         // Проверка вхождения
         if (userNorm.includes(recipeNorm) || recipeNorm.includes(userNorm)) return true;
         
         // Проверка по словарю синонимов
-        if (this.synonymMap[userNorm]) {
-            for (let syn of this.synonymMap[userNorm]) {
-                const synNorm = this.normalizeIngredient(syn);
-                if (synNorm === recipeNorm || recipeNorm.includes(synNorm) || synNorm.includes(recipeNorm)) {
-                    return true;
+        for (const [key, synonyms] of Object.entries(this.synonymMap)) {
+            const keyNorm = this.normalizeIngredient(key);
+            if (userNorm === keyNorm || recipeNorm === keyNorm) {
+                for (let syn of synonyms) {
+                    const synNorm = this.normalizeIngredient(syn);
+                    if (userNorm === synNorm || recipeNorm === synNorm) {
+                        return true;
+                    }
                 }
             }
         }
         
-        if (this.synonymMap[recipeNorm]) {
-            for (let syn of this.synonymMap[recipeNorm]) {
-                const synNorm = this.normalizeIngredient(syn);
-                if (synNorm === userNorm || userNorm.includes(synNorm) || synNorm.includes(userNorm)) {
-                    return true;
-                }
-            }
-        }
-        
-        // Дополнительная проверка набора слов
+        // Проверка набора слов (для случаев, когда одно слово входит в другое)
         const userWords = userNorm.split(/\s+/);
         const recipeWords = recipeNorm.split(/\s+/);
         
-        if (userWords.length > 1 && recipeWords.length > 1) {
-            const userSet = new Set(userWords);
-            const recipeSet = new Set(recipeWords);
-            
-            // Если все слова совпадают - это один и тот же ингредиент
+        // Если все слова пользователя есть в рецепте
+        if (userWords.length <= recipeWords.length) {
             let allMatch = true;
             for (let word of userWords) {
-                if (!recipeSet.has(word)) {
+                if (!recipeWords.includes(word)) {
                     allMatch = false;
                     break;
                 }
             }
-            if (allMatch && userWords.length === recipeWords.length) {
-                return true;
+            if (allMatch) return true;
+        }
+        
+        // Если все слова рецепта есть у пользователя
+        if (recipeWords.length <= userWords.length) {
+            let allMatch = true;
+            for (let word of recipeWords) {
+                if (!userWords.includes(word)) {
+                    allMatch = false;
+                    break;
+                }
             }
+            if (allMatch) return true;
         }
         
         return false;
