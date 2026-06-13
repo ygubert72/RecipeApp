@@ -12,7 +12,7 @@ let groupData = new Map();
 
 // ========== ФУНКЦИИ ОБНОВЛЕНИЯ СОСТОЯНИЯ КНОПОК ==========
 
-// Обновляет кнопку "Выбрать всё" для группы (галочка если есть хоть один выбранный)
+// Обновляет кнопку "Выбрать всё" для группы
 function updateGroupSelectAllButton(groupName) {
     const data = groupData.get(groupName);
     if (!data) return;
@@ -20,14 +20,16 @@ function updateGroupSelectAllButton(groupName) {
     const { buttons, selectAllBtn } = data;
     const selectedInGroup = buttons.filter(btn => btn.classList.contains('selected')).length;
     
-    if (selectedInGroup > 0) {
+    if (selectedInGroup > 0 && selectedInGroup === buttons.length) {
+        selectAllBtn.innerHTML = '✅ Выбрано всё';
+    } else if (selectedInGroup > 0) {
         selectAllBtn.innerHTML = '✅ Выбрать всё';
     } else {
         selectAllBtn.innerHTML = 'Выбрать всё';
     }
 }
 
-// Обновляет кнопку "Убрать всё" для группы (крестик если ничего не выбрано)
+// Обновляет кнопку "Убрать всё" для группы
 function updateGroupDeselectAllButton(groupName) {
     const data = groupData.get(groupName);
     if (!data) return;
@@ -36,7 +38,7 @@ function updateGroupDeselectAllButton(groupName) {
     const selectedInGroup = buttons.filter(btn => btn.classList.contains('selected')).length;
     
     if (selectedInGroup === 0) {
-        deselectAllBtn.innerHTML = '❌ Убрать всё';
+        deselectAllBtn.innerHTML = '❌ Убрано всё';
     } else {
         deselectAllBtn.innerHTML = 'Убрать всё';
     }
@@ -52,15 +54,13 @@ function updateGlobalButtons() {
     const totalProducts = allButtonsList.length;
     const selectedProducts = selectedIngredients.size;
     
-    // Глобальная кнопка "Выбрать всё" — галочка только если ВСЕ продукты выбраны
     if (selectedProducts === totalProducts && totalProducts > 0) {
-        selectAllGlobal.innerHTML = '✅ Выбрать всё';
+        selectAllGlobal.innerHTML = '✅ Выбрано всё';
     } else {
         selectAllGlobal.innerHTML = 'Выбрать всё';
     }
     
-    // Глобальная кнопка "Убрать всё" — всегда без иконки
-    deselectAllGlobal.innerHTML = 'Убрать всё';
+    deselectAllGlobal.innerHTML = selectedProducts === 0 ? '❌ Убрано всё' : 'Убрать всё';
 }
 
 // Обновляет всё после изменения выбора
@@ -196,6 +196,7 @@ function renderIngredients() {
             }
             collapsed = !collapsed;
             itemsDiv.style.display = collapsed ? 'none' : 'flex';
+            header.querySelector('.group-title').style.opacity = collapsed ? '0.7' : '1';
         });
         
         groupDiv.appendChild(header);
@@ -206,7 +207,7 @@ function renderIngredients() {
     updateAllButtonsState();
 }
 
-// ========== ОСТАЛЬНЫЕ ФУНКЦИИ ==========
+// ========== ОТРИСОВКА РЕЦЕПТОВ ==========
 
 function renderRecipeCard(recipe, status) {
     let statusBadge = '';
@@ -225,10 +226,21 @@ function renderRecipeCard(recipe, status) {
     const ingredientsPreview = recipe.ingredients.slice(0, 3).join(', ');
     const hasMore = recipe.ingredients.length > 3;
     
+    // Эмодзи для разных типов блюд
+    const typeEmoji = {
+        salad: '🥗',
+        snack: '🍢',
+        soup: '🍲',
+        main: '🍽️',
+        sauce: '🥫',
+        dessert: '🍰',
+        drink: '🥤'
+    };
+    
     return `
         <div class="recipe-card" data-id="${recipe.id}">
             ${statusBadge}
-            <div class="recipe-img-placeholder">🍽️</div>
+            <div class="recipe-img-placeholder">${typeEmoji[recipe.type] || '🍽️'}</div>
             <h4>${recipe.name}</h4>
             <div class="recipe-meta">⏱️ ${recipe.cookingTime || 30} мин • 🔥 ${recipe.calories || '?'} ккал</div>
             <small>📋 Ингредиенты: ${ingredientsPreview}${hasMore ? '...' : ''}</small>
@@ -239,6 +251,7 @@ function renderRecipeCard(recipe, status) {
 
 function showRecipeModal(recipe) {
     const modalBody = document.getElementById('modalRecipeBody');
+    if (!modalBody) return;
     
     let missingSection = '';
     if (recipe.missingIngredients && recipe.missingIngredients.length > 0) {
@@ -260,8 +273,11 @@ function showRecipeModal(recipe) {
     document.getElementById('recipeModal').style.display = 'flex';
 }
 
+// ========== ПОИСК РЕЦЕПТОВ ==========
+
 window.findRecipes = function() {
     const resultsDiv = document.getElementById('recipesList');
+    if (!resultsDiv) return;
     
     if (selectedIngredients.size === 0) {
         resultsDiv.innerHTML = '<div class="placeholder">⚠️ Выберите продукты в холодильнике</div>';
@@ -273,9 +289,12 @@ window.findRecipes = function() {
     let perfectMatches = [];
     let missing1Match = [];
     let missing2Match = [];
+    let otherMatches = [];
     
     allRecipes.forEach(recipe => {
+        // Фильтр по типу блюда
         if (selectedType !== "all" && recipe.type !== selectedType) return;
+        // Фильтр по кухне (если используется)
         if (currentCuisine !== "all" && recipe.cuisine !== currentCuisine) return;
         
         let missingIngredients = [];
@@ -294,10 +313,12 @@ window.findRecipes = function() {
             missing1Match.push({ ...recipe, missingIngredients });
         } else if (missingCount === 2) {
             missing2Match.push({ ...recipe, missingIngredients });
+        } else if (missingCount <= 4) {
+            otherMatches.push({ ...recipe, missingIngredients });
         }
     });
     
-    if (perfectMatches.length === 0 && missing1Match.length === 0 && missing2Match.length === 0) {
+    if (perfectMatches.length === 0 && missing1Match.length === 0 && missing2Match.length === 0 && otherMatches.length === 0) {
         resultsDiv.innerHTML = '<div class="placeholder">😕 Нет рецептов с выбранными продуктами. Попробуйте добавить ещё ингредиенты.</div>';
         return;
     }
@@ -316,25 +337,34 @@ window.findRecipes = function() {
         html += `<div class="results-section"><div class="section-header missing2"><span class="section-icon">📝</span><h3>Докупите 2 продукта (${missing2Match.length})</h3></div><div class="recipes-grid">${missing2Match.map(r => renderRecipeCard(r, 'missing2')).join('')}</div></div>`;
     }
     
+    if (otherMatches.length > 0) {
+        html += `<div class="results-section"><div class="section-header missing2"><span class="section-icon">📋</span><h3>Нужно докупить 3-4 продукта (${otherMatches.length})</h3></div><div class="recipes-grid">${otherMatches.map(r => renderRecipeCard(r, 'missing2')).join('')}</div></div>`;
+    }
+    
     resultsDiv.innerHTML = html;
     
     document.querySelectorAll('.recipe-card').forEach(card => {
         card.addEventListener('click', () => {
             const id = parseInt(card.getAttribute('data-id'));
-            let recipe = [...perfectMatches, ...missing1Match, ...missing2Match].find(r => r.id === id);
+            let recipe = [...perfectMatches, ...missing1Match, ...missing2Match, ...otherMatches].find(r => r.id === id);
             if (recipe) showRecipeModal(recipe);
         });
     });
 };
 
+// ========== НАСТРОЙКА ОБРАБОТЧИКОВ ==========
+
 function setupEventListeners() {
+    // Глобальные кнопки выбора продуктов
     document.getElementById('selectAllIngredientsBtn')?.addEventListener('click', () => window.selectAllIngredients());
     document.getElementById('deselectAllIngredientsBtn')?.addEventListener('click', () => window.deselectAllIngredients());
     
+    // Меню-гамбургер
     document.getElementById('menuToggle')?.addEventListener('click', () => {
         document.getElementById('mobileNav')?.classList.toggle('open');
     });
     
+    // Переключение тем
     document.querySelectorAll('.theme-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             const theme = btn.getAttribute('data-theme');
@@ -342,19 +372,34 @@ function setupEventListeners() {
             document.body.classList.add(`theme-${theme}`);
             document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
+            localStorage.setItem('preferredTheme', theme);
         });
     });
     
+    // Восстановление сохраненной темы
+    const savedTheme = localStorage.getItem('preferredTheme');
+    if (savedTheme && savedTheme !== 'green') {
+        document.body.classList.remove('theme-green');
+        document.body.classList.add(`theme-${savedTheme}`);
+        document.querySelector(`.theme-btn[data-theme="${savedTheme}"]`)?.classList.add('active');
+        document.querySelector('.theme-btn[data-theme="green"]')?.classList.remove('active');
+    }
+    
+    // Фильтр по типу блюда
     document.querySelectorAll('.type-buttons button').forEach(btn => {
         btn.addEventListener('click', () => {
             document.querySelectorAll('.type-buttons button').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             selectedType = btn.getAttribute('data-type');
+            // Автоматически обновляем результаты, если есть выбранные продукты
+            if (selectedIngredients.size > 0) window.findRecipes();
         });
     });
     
+    // Кнопка поиска рецептов
     document.getElementById('findRecipesBtn')?.addEventListener('click', () => window.findRecipes());
     
+    // Навигация по кухням (для мобильного меню)
     document.querySelectorAll('.nav-category').forEach(btn => {
         btn.addEventListener('click', () => {
             currentCuisine = btn.getAttribute('data-category');
@@ -363,6 +408,7 @@ function setupEventListeners() {
         });
     });
     
+    // AI ассистент
     const aiModal = document.getElementById('aiModal');
     const openAiBtn = document.getElementById('openAiAssistantBtn');
     const closeAi = document.querySelector('.close-ai');
@@ -376,20 +422,74 @@ function setupEventListeners() {
     askBtn?.addEventListener('click', () => {
         const q = aiQuestion?.value.trim();
         if (!q) {
-            if(aiAnswer) aiAnswer.innerHTML = '❓ Напишите ваш вопрос о готовке!';
+            if(aiAnswer) aiAnswer.innerHTML = '❓ Напишите ваш вопрос о готовке! Например: чем заменить яйца?';
             return;
         }
-        aiAnswer.innerHTML = '🧑‍🍳 ' + getAIAnswer(q);
+        const answer = getAIAnswer(q);
+        aiAnswer.innerHTML = '🧑‍🍳 <strong>Ответ ИИ-шефа:</strong><br><br>' + answer;
+        aiQuestion.value = '';
     });
     
+    // Модальное окно рецепта
     const modal = document.getElementById('recipeModal');
-    document.querySelector('.close')?.addEventListener('click', () => { if(modal) modal.style.display = 'none'; });
+    const closeModal = document.querySelector('.close');
+    closeModal?.addEventListener('click', () => { if(modal) modal.style.display = 'none'; });
+    
+    // Закрытие модальных окон при клике вне их области
     window.onclick = (e) => { 
         if (e.target === modal) modal.style.display = 'none'; 
         if (e.target === aiModal) aiModal.style.display = 'none'; 
     };
+    
+    // Обработка Enter в поле вопроса AI
+    aiQuestion?.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            askBtn?.click();
+        }
+    });
 }
 
+// ========== ИНИЦИАЛИЗАЦИЯ ==========
+
+// Функция для обновления счетчика выбранных продуктов (опционально)
+function updateSelectedCount() {
+    const count = selectedIngredients.size;
+    const total = allButtonsList.length;
+    const counterEl = document.getElementById('selectedCount');
+    if (counterEl) {
+        counterEl.textContent = `${count} / ${total}`;
+    }
+}
+
+// Запуск приложения
 renderIngredients();
 setupEventListeners();
-document.body.classList.add('theme-green');
+
+// Выводим информацию о загруженных рецептах в консоль
+console.log(`🍽️ Приложение "Шеф-повар" загружено!`);
+console.log(`📚 Всего рецептов: ${allRecipes.length}`);
+console.log(`🥗 Салатов: ${allRecipes.filter(r => r.type === 'salad').length}`);
+console.log(`🍢 Закусок: ${allRecipes.filter(r => r.type === 'snack').length}`);
+console.log(`🍲 Супов: ${allRecipes.filter(r => r.type === 'soup').length}`);
+console.log(`🍽️ Вторых блюд: ${allRecipes.filter(r => r.type === 'main').length}`);
+
+// Устанавливаем тему по умолчанию
+if (!localStorage.getItem('preferredTheme')) {
+    document.body.classList.add('theme-green');
+} else {
+    const saved = localStorage.getItem('preferredTheme');
+    document.body.classList.add(`theme-${saved}`);
+}
+
+// Экспортируем некоторые функции для отладки (опционально)
+if (typeof window !== 'undefined') {
+    window.debugApp = {
+        selectedIngredients: () => Array.from(selectedIngredients),
+        allRecipes: allRecipes,
+        clearSelection: () => {
+            window.deselectAllIngredients();
+            console.log('Выбор очищен');
+        }
+    };
+}
